@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "89496d5dd00f4810205f351759594fc2742bf8eea85a2f2b2d1de59f4bd91576"
+    },
+    "project-scaffolder": {
+      "source": "bkoimett/agent-skills",
+      "sourceType": "github",
+      "skillPath": "project-scaffolder/SKILL.md",
+      "computedHash": "126d20e825fc4fedf168d0be64ce35fb7b245a5e4e7c9c66f9b84711a6bfd68b"
+    }
+  }
+}
