@@ -1,80 +1,28 @@
-/**
- * Per-email+IP login throttle, called from the credentials `authorize`
- * callback before bcrypt runs (design.md §4: rate limiting has to happen
- * before the expensive hash comparison, or the limiter itself becomes the
- * DoS amplifier it exists to stop).
- *
- * Known limitation: the store is process memory. On Vercel each serverless
- * instance has its own, so the limit is per-instance rather than global and
- * a burst spread across instances gets MAX_ATTEMPTS each. That is
- * acceptable for a single-admin site where the realistic threat is one
- * person guessing one password, but a real limit needs a shared store
- * (Upstash Redis) or a rate_limit table. Flagged rather than silently
- * widened, since design.md §2 does not include such a table.
- */
-
-type Bucket = {
+interface RateLimitEntry {
   count: number;
-  resetAt: number;
-};
+  windowStart: number;
+}
+
+const store = new Map<string, RateLimitEntry>();
 
 const WINDOW_MS = 15 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
-const MAX_TRACKED_KEYS = 10_000;
 
-const buckets = new Map<string, Bucket>();
+export function checkLoginRateLimit(email: string, ip: string | null): { allowed: boolean; remaining: number; resetAt: number } {
+  const key = `${email.toLowerCase()}:${ip ?? "unknown"}`;
+  const now = Date.now();
+  const entry = store.get(key);
 
-export type RateLimitResult = {
-  allowed: boolean;
-  retryAfterSeconds: number;
-};
-
-function key(email: string, ip: string | null): string {
-  return `${email.toLowerCase()}:${ip ?? "unknown"}`;
-}
-
-function prune(now: number): void {
-  for (const [k, bucket] of buckets) {
-    if (bucket.resetAt <= now) buckets.delete(k);
-  }
-  // Hard cap so an attacker cycling emails can't grow the map without
-  // bound. Dropping the oldest is fine; entries are short-lived anyway.
-  if (buckets.size > MAX_TRACKED_KEYS) {
-    const excess = buckets.size - MAX_TRACKED_KEYS;
-    let removed = 0;
-    for (const k of buckets.keys()) {
-      buckets.delete(k);
-      if (++removed >= excess) break;
-    }
-  }
-}
-
-export function checkLoginRateLimit(
-  email: string,
-  ip: string | null,
-  now: number = Date.now(),
-): RateLimitResult {
-  prune(now);
-
-  const k = key(email, ip);
-  const bucket = buckets.get(k);
-
-  if (!bucket || now >= bucket.resetAt) {
-    buckets.set(k, { count: 1, resetAt: now + WINDOW_MS });
-    return { allowed: true, retryAfterSeconds: 0 };
+  if (!entry || now - entry.windowStart > WINDOW_MS) {
+    store.set(key, { count: 1, windowStart: now });
+    return { allowed: true, remaining: MAX_ATTEMPTS - 1, resetAt: now + WINDOW_MS };
   }
 
-  bucket.count += 1;
-  if (bucket.count > MAX_ATTEMPTS) {
-    return {
-      allowed: false,
-      retryAfterSeconds: Math.ceil((bucket.resetAt - now) / 1000),
-    };
+  if (entry.count >= MAX_ATTEMPTS) {
+    return { allowed: false, remaining: 0, resetAt: entry.windowStart + WINDOW_MS };
   }
-  return { allowed: true, retryAfterSeconds: 0 };
-}
 
-/** Exposed for tests; not used by the login path. */
-export function resetRateLimitStore(): void {
-  buckets.clear();
+  entry.count += 1;
+  store.set(key, entry);
+  return { allowed: true, remaining: MAX_ATTEMPTS - entry.count, resetAt: entry.windowStart + WINDOW_MS };
 }

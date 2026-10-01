@@ -22,28 +22,30 @@ export type ButtonProps = {
   size?: Size;
   href?: string;
   children: ReactNode;
-} & Omit<ComponentPropsWithoutRef<"button">, "children" | "className">;
+  className?: string;
+} & Omit<ComponentPropsWithoutRef<"button">, "children">;
 
 export function Button({
   variant = "primary",
   size = "md",
   href,
   children,
+  className,
   type = "button",
   ...props
 }: ButtonProps) {
-  const className = [base, variants[variant], sizes[size]].join(" ");
+  const classNameCombined = [base, variants[variant], sizes[size], className].filter(Boolean).join(" ");
 
   if (href) {
     return (
-      <a className={className} href={href} {...(props as ComponentPropsWithoutRef<"a">)}>
+      <a className={classNameCombined} href={href} {...(props as ComponentPropsWithoutRef<"a">)}>
         {children}
       </a>
     );
   }
 
   return (
-    <button type={type} className={className} {...props}>
+    <button type={type} className={classNameCombined} {...props}>
       {children}
     </button>
   );
