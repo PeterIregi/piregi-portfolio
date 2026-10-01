@@ -25,6 +25,7 @@ export async function listPublishedProjects() {
       coverMediaId: projects.coverMediaId,
       techStack: projects.techStack,
       tags: projects.tags,
+      updatedAt: projects.updatedAt,
     })
     .from(projects)
     .where(eq(projects.status, "published"))

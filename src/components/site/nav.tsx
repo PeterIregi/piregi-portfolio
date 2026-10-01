@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/site/theme-toggle";
 
 export function Nav({ cvHref = "/cv", brand }: { cvHref?: string; brand?: { name?: string; tagline?: string } }) {
   const pathname = usePathname();
@@ -31,6 +32,7 @@ export function Nav({ cvHref = "/cv", brand }: { cvHref?: string; brand?: { name
         </nav>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <Button variant="primary" size="sm" href={cvHref} className="hidden sm:inline-flex">
             Download CV
           </Button>
