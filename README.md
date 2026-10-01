@@ -42,9 +42,36 @@ pnpm db:seed      # load sample content (required for the site to render)
 pnpm dev
 ```
 
-Create the production Supabase project and its `cv-images` /
-`cv-files` storage buckets before the first Vercel production deploy
-(design.md §8).
+### Database workflow
+
+Drizzle owns the schema; migrations are applied in sequence and are never
+edited after being applied (design.md §8, `AGENTS.md` conventions).
+
+```bash
+pnpm db:generate   # generate a migration from schema.ts changes
+pnpm db:migrate    # apply pending migrations to DATABASE_URL
+pnpm db:studio     # browse the dev database
+```
+
+`DATABASE_URL` decides which database a command touches: the dev project
+locally and in preview deploys, the production project only in production
+deploys. There is no separate "apply to prod" command — switching the env
+var is the switch (design.md §8).
+
+### Supabase projects
+
+Both projects exist, each with the `cv-images` (public) and `cv-files`
+(private) storage buckets from design.md §5:
+
+| | Project | Ref |
+|---|---|---|
+| dev | `piregi-portfolio-dev` | `dahkcmakorkgaxaslhho` |
+| production | `piregi-portfolio-prod` | `jjmpltxgwonijnrjjzhd` |
+
+Both are in `us-east-1`. Database passwords are in the Supabase dashboard
+and are not committed to this repo. Production keys go into Vercel env vars
+when that project is configured; nothing secret belongs in `.env.local`
+beyond the dev project.
 
 ## Project docs
 
