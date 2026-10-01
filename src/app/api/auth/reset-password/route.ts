@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { passwordResetTokens, users } from "@/lib/db/schema";
 import { eq, and, gt, isNull } from "drizzle-orm";
-import { compare, hash } from "bcryptjs";
+import { hash } from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
