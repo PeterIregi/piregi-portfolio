@@ -9,12 +9,42 @@
   --color-claret: #8a1c2b;
   --color-claret-deep: #6e1521;
 
+  --color-paper-dark: #17181c;
+  --color-shell-dark: #1e1f22;
+  --color-ink-dark: #f3f4f2;
+  --color-graphite-dark: #a0a4ac;
+  --color-line-dark: #2d2e31;
+  --color-claret-dark: #c44a4a;
+  --color-claret-deep-dark: #e07b7b;
+
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-newsreader), Georgia, "Times New Roman", serif;
 
   --text-display: 3.75rem;
   --text-display--line-height: 1.02;
   --text-display--letter-spacing: -0.02em;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: var(--color-paper-dark);
+    --color-shell: var(--color-shell-dark);
+    --color-ink: var(--color-ink-dark);
+    --color-graphite: var(--color-graphite-dark);
+    --color-line: var(--color-line-dark);
+    --color-claret: var(--color-claret-dark);
+    --color-claret-deep: var(--color-claret-deep-dark);
+  }
+}
+
+html.dark {
+  --color-paper: var(--color-paper-dark);
+  --color-shell: var(--color-shell-dark);
+  --color-ink: var(--color-ink-dark);
+  --color-graphite: var(--color-graphite-dark);
+  --color-line: var(--color-line-dark);
+  --color-claret: var(--color-claret-dark);
+  --color-claret-deep: var(--color-claret-deep-dark);
 }
 
 body {
