@@ -1,5 +1,5 @@
 {
-  "id": "3567af93-f1f0-4085-8ae4-15ff2473ac49",
+  "id": "104109aa-e60f-444a-aff0-0872e6bbc9a7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -53,7 +53,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "contact_status": {
+          "name": "contact_status",
+          "value": "\"contact_submissions\".\"status\" IN ('new', 'read', 'archived')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.cv_files": {
@@ -422,7 +427,15 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "project_gallery_project_id_media_id_pk": {
+          "name": "project_gallery_project_id_media_id_pk",
+          "columns": [
+            "project_id",
+            "media_id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
@@ -544,7 +557,12 @@
         }
       },
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "projects_status": {
+          "name": "projects_status",
+          "value": "\"projects\".\"status\" IN ('draft', 'published')"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.site_settings": {
