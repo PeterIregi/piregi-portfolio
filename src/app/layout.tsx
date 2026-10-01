@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import { Metadata } from "next";
 import { getSiteSettings } from "@/lib/db/queries/public";
 import { Nav } from "@/components/site/nav";
 import { Footer } from "@/components/site/footer";
+import { PageViewBeacon } from "@/components/site/page-view-beacon";
 
 export const metadata: Metadata = {
   title: "Piregi Portfolio",
@@ -16,6 +17,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Nav cvHref="/cv" brand={settings.brand} />
       <main className="flex-1">{children}</main>
       <Footer socials={settings.socials} brand={settings.brand} />
+      <PageViewBeacon />
     </div>
   );
 }
