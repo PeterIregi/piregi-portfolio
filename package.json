@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "bcryptjs": "3.0.3",
+    "date-fns": "^4.4.0",
     "dotenv": "^16",
     "drizzle-orm": "^0.44",
     "next": "16.3.5",
