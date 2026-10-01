@@ -6,7 +6,6 @@ import {
   experiences,
   skills,
   testimonials,
-  cvFiles,
   siteSettings,
   mediaAssets,
   projectGallery,
