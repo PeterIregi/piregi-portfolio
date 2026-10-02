@@ -4,14 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function UploadCvPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const created = searchParams.get("created") === "1";
 
-  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -75,7 +72,6 @@ export default function UploadCvPage() {
             id="cvFile"
             type="file"
             accept="application/pdf"
-            onChange={e => setFile(e.target.files?.[0] ?? null)}
             required
             className="h-11 w-full rounded border border-line bg-white px-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
           />

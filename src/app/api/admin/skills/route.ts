@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { skills } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 const skillSchema = z.object({

@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/guards";
 import { AdminSidebar } from "@/components/admin/sidebar";
 

@@ -1,15 +1,14 @@
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { getActiveCv, getSiteSettings } from "@/lib/db/queries/public";
+import { getActiveCv } from "@/lib/db/queries/public";
 
 export const metadata: Metadata = {
   title: "CV | Piregi Portfolio",
 };
 
 export default async function CvPage() {
-  const [cv, settings] = await Promise.all([getActiveCv(), getSiteSettings()]);
+  const cv = await getActiveCv();
 
   return (
     <Container className="py-16 lg:py-24">

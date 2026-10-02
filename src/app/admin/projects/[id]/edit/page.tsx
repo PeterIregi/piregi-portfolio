@@ -5,10 +5,9 @@ import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 export default function EditProjectPage() {
-  const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const created = searchParams.get("created") === "1";
@@ -23,9 +22,7 @@ export default function EditProjectPage() {
   const [projectUrl, setProjectUrl] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {

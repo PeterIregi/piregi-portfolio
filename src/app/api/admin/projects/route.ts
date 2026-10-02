@@ -41,7 +41,7 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request) {
+export async function GET() {
   // Handled by the page
   return NextResponse.json({ error: "Use GET /admin/projects" }, { status: 404 });
 }
