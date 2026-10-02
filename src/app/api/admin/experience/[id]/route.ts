@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { experiences } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
+import { experienceSchema } from "@/lib/validation/content";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -25,16 +25,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     await requireAdmin();
     const { id } = await params;
     const requestBody = await req.json();
-
-    const experienceSchema = z.object({
-      roleTitle: z.string().min(1).max(200),
-      organization: z.string().min(1).max(200),
-      startDate: z.string().date(),
-      endDate: z.string().date().optional().nullable(),
-      description: z.string().min(1),
-      type: z.enum(["work", "education", "certification"]),
-      sortOrder: z.number().int().default(0),
-    });
 
     const parsed = experienceSchema.safeParse(requestBody);
 

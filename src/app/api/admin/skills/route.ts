@@ -2,13 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { skills } from "@/lib/db/schema";
-import { z } from "zod";
-
-const skillSchema = z.object({
-  name: z.string().min(1).max(100),
-  category: z.string().min(1).max(100),
-  proficiency: z.number().int().min(1).max(5).optional(),
-});
+import { skillSchema } from "@/lib/validation/content";
 
 export async function POST(req: Request) {
   try {
