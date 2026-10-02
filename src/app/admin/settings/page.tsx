@@ -1,11 +1,7 @@
 import { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getSiteSettings } from "@/lib/db/queries/public";
-import { db } from "@/lib/db";
-import { siteSettings } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 import { requireAdmin } from "@/lib/auth/guards";
 
 export const metadata: Metadata = {

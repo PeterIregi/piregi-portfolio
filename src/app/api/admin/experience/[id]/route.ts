@@ -5,17 +5,7 @@ import { experiences } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-const experienceSchema = z.object({
-  roleTitle: z.string().min(1).max(200),
-  organization: z.string().min(1).max(200),
-  startDate: z.string().date(),
-  endDate: z.string().date().optional().nullable(),
-  description: z.string().min(1),
-  type: z.enum(["work", "education", "certification"]),
-  sortOrder: z.number().int().default(0),
-});
-
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await requireAdmin();
     const { id } = await params;

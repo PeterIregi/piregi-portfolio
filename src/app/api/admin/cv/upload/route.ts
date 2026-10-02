@@ -15,10 +15,7 @@ export async function POST(req: Request) {
     if (file.type !== "application/pdf") return NextResponse.json({ error: "File must be a PDF" }, { status: 400 });
     if (file.size > 10 * 1024 * 1024) return NextResponse.json({ error: "File size must be less than 10MB" }, { status: 400 });
 
-    const storagePath = `cv/${uuidv4()}-${file.name.replace(/\s+/g, "-")}`;
-
-    // In production, upload to Supabase Storage private bucket here
-    // For now, store metadata
+    // Store metadata only; upload to Supabase Storage goes in lib/storage
     await db.transaction(async (tx) => {
       // Deactivate all existing CVs
       await tx.update(cvFiles).set({ isActive: false }).where(eq(cvFiles.isActive, true));
