@@ -2,17 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { experiences } from "@/lib/db/schema";
-import { z } from "zod";
-
-const experienceSchema = z.object({
-  roleTitle: z.string().min(1).max(200),
-  organization: z.string().min(1).max(200),
-  startDate: z.string().date(),
-  endDate: z.string().date().optional().nullable(),
-  description: z.string().min(1),
-  type: z.enum(["work", "education", "certification"]),
-  sortOrder: z.number().int().default(0),
-});
+import { experienceSchema } from "@/lib/validation/content";
 
 export async function POST(req: Request) {
   try {

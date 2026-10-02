@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { testimonials } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
+import { testimonialSchema } from "@/lib/validation/content";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -23,12 +23,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     await requireAdmin();
     const { id } = await params;
     const body = await req.json();
-    const testimonialSchema = z.object({
-      authorName: z.string().min(1).max(100),
-      authorTitle: z.string().min(1).max(100),
-      company: z.string().max(100).optional(),
-      quote: z.string().min(1),
-    });
     const parsed = testimonialSchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten() }, { status: 400 });
 

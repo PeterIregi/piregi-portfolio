@@ -2,14 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { testimonials } from "@/lib/db/schema";
-import { z } from "zod";
-
-const testimonialSchema = z.object({
-  authorName: z.string().min(1).max(100),
-  authorTitle: z.string().min(1).max(100),
-  company: z.string().max(100).optional(),
-  quote: z.string().min(1),
-});
+import { testimonialSchema } from "@/lib/validation/content";
 
 export async function POST(req: Request) {
   try {
