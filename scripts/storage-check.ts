@@ -31,11 +31,6 @@ async function main() {
   // Presence is checked through the bucket listing rather than by re-fetching
   // the URL: Supabase's CDN keeps serving a URL for as long as its cache
   // directive allows, so a 200 after delete says nothing about the object.
-  const listed = async (bucket: "cv-files" | "cv-images") => {
-    const { data, error } = await supabase.storage.from(bucket).list("", { limit: 1000 });
-    if (error) throw new Error(`list ${bucket}: ${error.message}`);
-    return data.map((o) => o.name);
-  };
   const objects = async (bucket: "cv-files" | "cv-images", folder: string) => {
     const { data, error } = await supabase.storage.from(bucket).list(folder, { limit: 1000 });
     if (error) throw new Error(`list ${bucket}/${folder}: ${error.message}`);
