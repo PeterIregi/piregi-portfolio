@@ -2,14 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { contactSubmissions } from "@/lib/db/schema";
 import { sendContactNotification } from "@/lib/email";
-import { z } from "zod";
-
-const contactSchema = z.object({
-  name: z.string().min(1).max(100),
-  email: z.string().email(),
-  message: z.string().min(10).max(5000),
-  hp: z.string().optional(), // honeypot
-});
+import { contactSubmissionSchema } from "@/lib/validation/messages";
 
 export async function POST(req: Request) {
   try {
@@ -21,15 +14,20 @@ export async function POST(req: Request) {
       hp: formData.get("hp"),
     };
 
-    const parsed = contactSchema.safeParse(raw);
-
-    // Honeypot check
-    if (raw.hp) {
-      return NextResponse.json({ success: true }); // Silently succeed
+    // Honeypot: real visitors' form never populates hp (it is hidden).
+    // Treat a filled-in field as a bot and silently "succeed" (design.md §5).
+    const hpValue = typeof raw.hp === "string" ? raw.hp.trim() : "";
+    if (hpValue) {
+      return NextResponse.json({ success: true });
     }
 
+    const parsed = contactSubmissionSchema.safeParse(raw);
+
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+      // Public form: safe generic message, specifics logged server-side
+      // (design.md §9).
+      console.warn("contact submission rejected:", parsed.error.flatten());
+      return NextResponse.json({ error: "Please check your details and try again" }, { status: 400 });
     }
 
     const { name, email, message } = parsed.data;
@@ -45,6 +43,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("contact submission error:", error);
-    return NextResponse.json({ error: "Failed to submit" }, { status: 500 });
+    return NextResponse.json({ error: "Something went wrong, please try again later" }, { status: 500 });
   }
 }
