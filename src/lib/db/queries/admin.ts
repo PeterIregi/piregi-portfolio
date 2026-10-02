@@ -45,10 +45,6 @@ export async function listAllTestimonials() {
   return db.select().from(testimonials).orderBy(testimonials.sortOrder);
 }
 
-export async function listAllCvFiles() {
-  return db.select().from(cvFiles).orderBy(desc(cvFiles.uploadedAt));
-}
-
 export async function listAllMediaAssets() {
   return db.select().from(mediaAssets).orderBy(desc(mediaAssets.uploadedAt));
 }

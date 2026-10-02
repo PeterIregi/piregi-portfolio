@@ -28,7 +28,7 @@ export default async function CvPage() {
             <p className="text-graphite mb-6">
               Downloaded {cv.downloadCount} time{cv.downloadCount !== 1 ? "s" : ""}.
             </p>
-            <Button variant="primary" size="md" href="/api/cv/download" className="w-full sm:w-auto">
+            <Button variant="primary" size="md" href={`/api/cv/download/${cv.id}`} className="w-full sm:w-auto">
               Download CV
             </Button>
           </>

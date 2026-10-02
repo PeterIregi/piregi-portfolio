@@ -1,20 +1,21 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/guards";
-import { db } from "@/lib/db";
-import { cvFiles } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { deleteCv, getCvById, isCvIdDeletable } from "@/lib/db/cv";
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await requireAdmin();
     const { id } = await params;
 
-    const [cv] = await db.select().from(cvFiles).where(eq(cvFiles.id, id)).limit(1);
-    if (!cv) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const existing = await getCvById(id);
+    if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    // In production, delete from Supabase Storage here
+    if (!(await isCvIdDeletable(id))) {
+      return NextResponse.json({ error: "Cannot delete the active CV" }, { status: 400 });
+    }
 
-    await db.delete(cvFiles).where(eq(cvFiles.id, id));
+    // Delete from Supabase Storage goes in lib/storage (design.md §5).
+    await deleteCv(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("delete CV error:", error);

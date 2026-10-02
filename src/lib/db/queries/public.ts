@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
-import { siteSettings, projects, experiences, skills, testimonials, cvFiles } from "@/lib/db/schema";
+import { siteSettings, projects, experiences, skills, testimonials } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { getActiveCv } from "@/lib/db/cv";
 
 export async function getSiteSettings() {
   const rows = await db.select().from(siteSettings);
@@ -53,11 +54,4 @@ export async function listTestimonials() {
   return db.select().from(testimonials).orderBy(testimonials.sortOrder);
 }
 
-export async function getActiveCv() {
-  const [cv] = await db
-    .select()
-    .from(cvFiles)
-    .where(eq(cvFiles.isActive, true))
-    .limit(1);
-  return cv;
-}
+export { getActiveCv };
