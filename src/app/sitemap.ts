@@ -2,6 +2,10 @@ import { MetadataRoute } from "next";
 import { getSiteSettings } from "@/lib/db/queries/public";
 import { listPublishedProjects } from "@/lib/db/queries/public";
 
+// Lists published projects, so it is generated per request: the build has
+// no database, and a newly published project should not wait for a deploy.
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const settings = await getSiteSettings();
   const baseUrl = settings.meta?.ogImage?.includes("http") 
