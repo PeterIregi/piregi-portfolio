@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   getSiteSettings,
   listPublishedProjects,
+  listTestimonials,
 } from "@/lib/db/queries/public";
 
 export const metadata: Metadata = {
@@ -13,9 +14,10 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [settings, projects] = await Promise.all([
+  const [settings, projects, testimonials] = await Promise.all([
     getSiteSettings(),
     listPublishedProjects(),
+    listTestimonials(),
   ]);
 
   const featured = projects.slice(0, 3);
@@ -131,6 +133,50 @@ export default async function HomePage() {
           </div>
         </Container>
       </section>
+
+      {testimonials.length > 0 && (
+        <section className="py-16 lg:py-24 bg-shell" aria-labelledby="testimonials-heading">
+          <Container>
+            <header className="mb-12 lg:mb-16 max-w-2xl mx-auto text-center">
+              <h2 id="testimonials-heading" className="font-display text-3xl lg:text-4xl text-ink mb-4">
+                Testimonials
+              </h2>
+              <p className="text-lg leading-relaxed text-graphite">
+                What colleagues and clients have to say.
+              </p>
+            </header>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+              {testimonials.map((testimonial) => (
+                <article key={testimonial.id} className="bg-white rounded-lg border border-line p-6">
+                  <blockquote className="text-graphite leading-relaxed mb-4">
+                    &ldquo;{testimonial.quote}&rdquo;
+                  </blockquote>
+                  <footer className="flex items-center gap-3">
+                    {testimonial.avatarUrl && (
+                      <div className="w-10 h-10 rounded-full bg-shell flex items-center justify-center overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={testimonial.avatarUrl}
+                          alt={testimonial.avatarAltText ?? testimonial.authorName}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-medium text-ink">{testimonial.authorName}</p>
+                      <p className="text-sm text-graphite">
+                        {testimonial.authorTitle}
+                        {testimonial.company && `, ${testimonial.company}`}
+                      </p>
+                    </div>
+                  </footer>
+                </article>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
     </div>
   );
 }
