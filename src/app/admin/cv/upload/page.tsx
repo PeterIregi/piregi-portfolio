@@ -5,6 +5,9 @@ import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { MAX_CV_BYTES, validateCvFile } from "@/lib/validation/upload";
+
+const MAX_CV_LABEL = `${MAX_CV_BYTES / (1024 * 1024)}MB`;
 
 export default function UploadCvPage() {
   const router = useRouter();
@@ -15,19 +18,13 @@ export default function UploadCvPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const fileInput = document.getElementById("cvFile") as HTMLInputElement;
-    const file = fileInput.files?.[0];
+    const file = fileInput.files?.[0] ?? null;
 
-    if (!file) {
-      setFormError("Please select a file");
-      return;
-    }
-
-    if (file.type !== "application/pdf") {
-      setFormError("File must be a PDF");
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      setFormError("File size must be less than 10MB");
+    // Same schema the upload route runs, so the message here matches what
+    // the server would say. The server still decides (design.md §4).
+    const rejection = validateCvFile(file);
+    if (rejection) {
+      setFormError(rejection);
       return;
     }
 
@@ -35,7 +32,7 @@ export default function UploadCvPage() {
     setFormError("");
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file as File);
 
     try {
       const res = await fetch("/api/admin/cv/upload", {
@@ -60,7 +57,7 @@ export default function UploadCvPage() {
     <Container className="py-8 max-w-2xl">
       <header className="mb-8">
         <h1 className="font-display text-3xl text-ink">Upload CV</h1>
-        <p className="text-graphite mt-2">Upload a new PDF version of your CV (max 10MB)</p>
+        <p className="text-graphite mt-2">Upload a new PDF version of your CV (max {MAX_CV_LABEL})</p>
       </header>
 
       <form onSubmit={handleSubmit} className="max-w-xl space-y-6">
@@ -75,7 +72,7 @@ export default function UploadCvPage() {
             required
             className="h-11 w-full rounded border border-line bg-white px-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
           />
-          <p className="text-sm text-graphite">PDF only, max 10MB</p>
+          <p className="text-sm text-graphite">PDF only, max {MAX_CV_LABEL}</p>
         </div>
 
         <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
