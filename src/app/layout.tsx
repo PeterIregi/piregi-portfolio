@@ -9,6 +9,13 @@ export const metadata: Metadata = {
   description: "Personal portfolio: work, experience, and a downloadable CV.",
 };
 
+// The nav and footer render rows from site_settings, so this layout can
+// never be prerendered: the build runs without a DATABASE_URL on purpose
+// (the CI verify job keeps production credentials off preview builds too,
+// design.md §8), and an admin edit has to show up on the next request
+// rather than at the next deploy.
+export const dynamic = "force-dynamic";
+
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSiteSettings();
 
