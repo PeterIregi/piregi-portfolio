@@ -1,5 +1,13 @@
 import { db } from "@/lib/db";
-import { siteSettings, projects, experiences, skills, testimonials } from "@/lib/db/schema";
+import {
+  siteSettings,
+  projects,
+  projectGallery,
+  mediaAssets,
+  experiences,
+  skills,
+  testimonials,
+} from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { getActiveCv } from "@/lib/db/cv";
 
@@ -23,23 +31,60 @@ export async function listPublishedProjects() {
       title: projects.title,
       slug: projects.slug,
       summary: projects.summary,
-      coverMediaId: projects.coverMediaId,
       techStack: projects.techStack,
       tags: projects.tags,
       updatedAt: projects.updatedAt,
+      // A left join, so a project whose cover was never picked in the admin
+      // still lists instead of dropping out of the grid.
+      coverUrl: mediaAssets.publicUrl,
+      coverAltText: mediaAssets.altText,
     })
     .from(projects)
+    .leftJoin(mediaAssets, eq(projects.coverMediaId, mediaAssets.id))
     .where(eq(projects.status, "published"))
     .orderBy(projects.createdAt);
 }
 
 export async function getPublishedProjectBySlug(slug: string) {
   const [project] = await db
-    .select()
+    .select({
+      id: projects.id,
+      title: projects.title,
+      slug: projects.slug,
+      summary: projects.summary,
+      description: projects.description,
+      techStack: projects.techStack,
+      tags: projects.tags,
+      projectUrl: projects.projectUrl,
+      repoUrl: projects.repoUrl,
+      updatedAt: projects.updatedAt,
+      coverUrl: mediaAssets.publicUrl,
+      coverAltText: mediaAssets.altText,
+    })
     .from(projects)
+    .leftJoin(mediaAssets, eq(projects.coverMediaId, mediaAssets.id))
     .where(and(eq(projects.slug, slug), eq(projects.status, "published")))
     .limit(1);
-  return project;
+  return project ?? null;
+}
+
+/**
+ * Gallery plates in the order the admin arranged them. Joined from
+ * media_assets rather than returning ids so the page never has to reach
+ * into mediaAssets itself (design.md §3).
+ */
+export async function listPublishedProjectGallery(projectId: string) {
+  return db
+    .select({
+      id: mediaAssets.id,
+      publicUrl: mediaAssets.publicUrl,
+      altText: mediaAssets.altText,
+      position: projectGallery.position,
+    })
+    .from(projectGallery)
+    .innerJoin(mediaAssets, eq(projectGallery.mediaId, mediaAssets.id))
+    .where(eq(projectGallery.projectId, projectId))
+    .orderBy(projectGallery.position);
 }
 
 export async function listExperiences() {
