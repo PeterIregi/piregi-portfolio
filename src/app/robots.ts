@@ -1,21 +1,19 @@
-import { MetadataRoute } from "next";
-import { getSiteSettings } from "@/lib/db/queries/public";
+import type { MetadataRoute } from "next";
+import { siteUrl } from "@/lib/site-url";
 
-// Generated on request for the same reason as the site layout: the query
-// needs a database the build does not have.
-export const dynamic = "force-dynamic";
-
-export default async function robots(): Promise<MetadataRoute.Robots> {
-  const settings = await getSiteSettings();
-  const baseUrl = settings.meta?.ogImage?.includes("http") 
-    ? settings.meta.ogImage.replace("/og-image.jpg", "") 
-    : "https://piregi.dev";
+// No dynamic export on purpose: robots.txt reads only the environment, not
+// site_settings, so it can be prerendered. sitemap.ts cannot, because it
+// lists published projects.
+export default function robots(): MetadataRoute.Robots {
+  const baseUrl = siteUrl();
 
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin/", "/api/", "/admin/login"],
+      // A crawler hint, not the access boundary: every admin route is
+      // protected by requireAdmin() in its handler (design.md §4).
+      disallow: ["/admin", "/api"],
     },
     sitemap: `${baseUrl}/sitemap.xml`,
   };

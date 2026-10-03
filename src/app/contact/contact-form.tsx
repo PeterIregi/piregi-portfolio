@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { siteUrl } from "@/lib/site-url";
+import { StructuredData, breadcrumbSchema } from "@/components/site/structured-data";
 
 type Props = {
   success: boolean;
@@ -51,6 +53,13 @@ export default function ContactForm({ success }: Props) {
 
   return (
     <Container className="py-16 lg:py-24">
+      <StructuredData
+        data={breadcrumbSchema(siteUrl(), [
+          { name: "Home", path: "/" },
+          { name: "Contact", path: "/contact" },
+        ])}
+      />
+
       <header className="mb-12 lg:mb-16">
         <h1 className="font-display text-4xl lg:text-5xl text-ink mb-4">Contact</h1>
         <p className="max-w-2xl text-lg leading-relaxed text-graphite">
