@@ -96,7 +96,21 @@ export async function listSkills() {
 }
 
 export async function listTestimonials() {
-  return db.select().from(testimonials).orderBy(testimonials.sortOrder);
+  return db
+    .select({
+      id: testimonials.id,
+      authorName: testimonials.authorName,
+      authorTitle: testimonials.authorTitle,
+      company: testimonials.company,
+      quote: testimonials.quote,
+      avatarMediaId: testimonials.avatarMediaId,
+      avatarUrl: mediaAssets.publicUrl,
+      avatarAltText: mediaAssets.altText,
+      sortOrder: testimonials.sortOrder,
+    })
+    .from(testimonials)
+    .leftJoin(mediaAssets, eq(testimonials.avatarMediaId, mediaAssets.id))
+    .orderBy(testimonials.sortOrder);
 }
 
 export { getActiveCv };
