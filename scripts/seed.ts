@@ -278,6 +278,12 @@ async function seed() {
         tagline: "Full Stack Developer",
       },
     },
+    {
+      key: "bio",
+      value: {
+        photoMediaId: ID.media.avatar1,
+      },
+    },
   ];
 
   for (const s of settings) {
