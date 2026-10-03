@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { listPublishedProjects } from "@/lib/db/queries/public";
+import { siteUrl } from "@/lib/site-url";
+import { StructuredData, breadcrumbSchema } from "@/components/site/structured-data";
 
 export const metadata: Metadata = {
   title: "Projects | Piregi Portfolio",
+  description: "Selected projects: what was built, the stack behind it, and where it lives.",
+  alternates: { canonical: "/projects" },
 };
 
 export default async function ProjectsPage() {
@@ -12,6 +16,13 @@ export default async function ProjectsPage() {
 
   return (
     <Container className="py-16 lg:py-24">
+<StructuredData
+        data={breadcrumbSchema(siteUrl(), [
+          { name: "Home", path: "/" },
+          { name: "Projects", path: "/projects" },
+        ])}
+      />
+
       <header className="mb-12 lg:mb-16 max-w-2xl">
         <h1 className="font-display text-4xl lg:text-5xl text-ink mb-4">Projects</h1>
         <p className="text-lg leading-relaxed text-graphite">
