@@ -8,6 +8,12 @@ import {
   getPublishedProjectBySlug,
   listPublishedProjectGallery,
 } from "@/lib/db/queries/public";
+import { siteUrl } from "@/lib/site-url";
+import {
+  StructuredData,
+  breadcrumbSchema,
+  creativeWorkSchema,
+} from "@/components/site/structured-data";
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -24,9 +30,11 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   return {
     title: `${project.title} | Piregi Portfolio`,
     description: project.summary,
+    alternates: { canonical: `/projects/${project.slug}` },
     openGraph: {
       title: project.title,
       description: project.summary,
+      type: "article",
       ...(project.coverUrl ? { images: [{ url: project.coverUrl }] } : {}),
     },
   };
@@ -56,9 +64,19 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const gallery = await listPublishedProjectGallery(project.id);
   const [lead, ...rest] = paragraphs(project.description);
   const plates = gallery.filter((item) => item.publicUrl !== project.coverUrl);
+  const baseUrl = siteUrl();
 
   return (
     <article>
+      <StructuredData
+        data={breadcrumbSchema(baseUrl, [
+          { name: "Home", path: "/" },
+          { name: "Projects", path: "/projects" },
+          { name: project.title, path: `/projects/${project.slug}` },
+        ])}
+      />
+      <StructuredData data={creativeWorkSchema(project, baseUrl)} />
+
       <Container className="pt-16 pb-12 lg:pt-24">
         <Link
           href="/projects"
