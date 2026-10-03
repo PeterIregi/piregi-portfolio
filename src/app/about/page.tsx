@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { getSiteSettings, listSkills } from "@/lib/db/queries/public";
+import {
+  getSiteSettings,
+  listSkills,
+  getBioPhoto,
+} from "@/lib/db/queries/public";
 import { siteUrl } from "@/lib/site-url";
 import { StructuredData, breadcrumbSchema } from "@/components/site/structured-data";
 
@@ -11,7 +15,11 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [settings, skills] = await Promise.all([getSiteSettings(), listSkills()]);
+  const [settings, skills, bioPhoto] = await Promise.all([
+    getSiteSettings(),
+    listSkills(),
+    getBioPhoto(),
+  ]);
 
   const skillsByCategory = skills.reduce((acc, skill) => {
     (acc[skill.category] ??= []).push(skill);
@@ -27,17 +35,27 @@ export default async function AboutPage() {
         ])}
       />
 
-      <header className="mb-12 lg:mb-16">
-        <h1 className="font-display text-4xl lg:text-5xl text-ink mb-4">About</h1>
-        <p className="max-w-2xl text-lg leading-relaxed text-graphite">
-          {settings.brand?.tagline ?? "Full Stack Developer"} passionate about building reliable, scalable software.
-        </p>
+      <header className="mb-12 lg:mb-16 flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+        <div className="md:w-2/3">
+          <h1 className="font-display text-4xl lg:text-5xl text-ink mb-4">About</h1>
+          <p className="max-w-2xl text-lg leading-relaxed text-graphite">
+            {settings.brand?.tagline ?? "Full Stack Developer"} passionate about building reliable, scalable software.
+          </p>
+        </div>
+        {bioPhoto && (
+          <div aria-hidden="true" className="md:w-1/3 flex-shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={bioPhoto.publicUrl}
+              alt={bioPhoto.altText ?? settings.brand?.name ?? "Portrait"}
+              className="aspect-square w-full rounded-lg object-cover"
+            />
+          </div>
+        )}
       </header>
 
-      <section className="mb-16" aria-labelledby="skills-heading">
-        <h2 id="skills-heading" className="font-display text-2xl text-ink mb-6">
-          Skills
-        </h2>
+      <section className="mb-16">
+        <h2 className="font-display text-2xl text-ink mb-6">Skills</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
             <div key={category} className="bg-shell rounded-lg p-6">

@@ -21,7 +21,33 @@ export async function getSiteSettings() {
     meta?: { title?: string; description?: string; ogImage?: string };
     socials?: { github?: string; linkedin?: string; email?: string };
     brand?: { name?: string; tagline?: string };
+    bio?: { photoMediaId?: string };
   };
+}
+
+export async function getBioPhoto() {
+  const [row] = await db
+    .select({
+      photoMediaId: siteSettings.value,
+    })
+    .from(siteSettings)
+    .where(eq(siteSettings.key, "bio"))
+    .limit(1);
+
+  if (!row?.photoMediaId || typeof row.photoMediaId !== "object" || !("photoMediaId" in row.photoMediaId)) {
+    return null;
+  }
+
+  const mediaId = (row.photoMediaId as { photoMediaId: string }).photoMediaId;
+  if (!mediaId) return null;
+
+  const [asset] = await db
+    .select({ publicUrl: mediaAssets.publicUrl, altText: mediaAssets.altText })
+    .from(mediaAssets)
+    .where(eq(mediaAssets.id, mediaId))
+    .limit(1);
+
+  return asset ?? null;
 }
 
 export async function listPublishedProjects() {
