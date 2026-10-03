@@ -64,29 +64,36 @@ export default async function HomePage() {
               </p>
             </header>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+            <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
               {featured.map((project) => (
-                <article key={project.id} className="bg-white rounded-lg border border-line overflow-hidden">
-                  <div className="aspect-[3/2] bg-shell flex items-center justify-center">
-                    <span className="text-graphite/40 text-sm">No cover image</span>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-display text-xl text-ink mb-2">{project.title}</h3>
-                    <p className="text-graphite text-sm mb-4 line-clamp-3">{project.summary}</p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.techStack.slice(0, 4).map((tech) => (
-                        <span key={tech} className="text-xs bg-claret/10 text-claret px-2 py-1 rounded">
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
+                <article key={project.id}>
+                  {project.coverUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={project.coverUrl}
+                      alt={project.coverAltText ?? ""}
+                      className="aspect-[3/2] w-full rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div aria-hidden="true" className="aspect-[3/2] w-full rounded-lg bg-shell" />
+                  )}
+                  {/* The title is the link, matching /projects: an
+                      arrow-suffixed CTA on every card is the generic tell
+                      design.md §10 warns about. */}
+                  <h3 className="mt-5 font-display text-xl text-ink">
                     <Link
                       href={`/projects/${project.slug}`}
-                      className="text-claret hover:text-claret-deep text-sm font-medium inline-flex items-center gap-1"
+                      className="hover:text-claret transition-colors"
                     >
-                      View details
+                      {project.title}
                     </Link>
-                  </div>
+                  </h3>
+                  <p className="mt-2 text-graphite">{project.summary}</p>
+                  {project.techStack.length > 0 && (
+                    <p className="mt-4 text-sm text-graphite">
+                      {project.techStack.slice(0, 4).join(" · ")}
+                    </p>
+                  )}
                 </article>
               ))}
             </div>
