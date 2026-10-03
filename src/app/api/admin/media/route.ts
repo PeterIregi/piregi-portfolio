@@ -2,40 +2,62 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { mediaAssets } from "@/lib/db/schema";
-import { v4 as uuidv4 } from "uuid";
+import { desc } from "drizzle-orm";
+import { deleteObject, uploadImage } from "@/lib/storage";
+import { validateImageFile } from "@/lib/validation/upload";
+
+export async function GET() {
+  try {
+    await requireAdmin();
+
+    const images = await db
+      .select()
+      .from(mediaAssets)
+      .orderBy(desc(mediaAssets.uploadedAt));
+
+    return NextResponse.json(images);
+  } catch (error) {
+    console.error("list media error:", error);
+    return NextResponse.json({ error: "Failed to load images" }, { status: 500 });
+  }
+}
 
 export async function POST(req: Request) {
   try {
     await requireAdmin();
     const formData = await req.formData();
-    const file = formData.get("file") as File | null;
 
-    if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
-    if (!file.type.startsWith("image/")) return NextResponse.json({ error: "Only images allowed" }, { status: 400 });
-    if (file.size > 5 * 1024 * 1024) return NextResponse.json({ error: "File too large (max 5MB)" }, { status: 400 });
+    const file = formData.get("file");
+    const rejection = validateImageFile(file instanceof File ? file : null);
+    if (rejection) {
+      return NextResponse.json({ error: `Image rejected: ${rejection}` }, { status: 400 });
+    }
 
-    const id = uuidv4();
-    const storagePath = `media/${id}-${file.name.replace(/\s+/g, "-")}`;
+    const validated = file as File;
+    const altText = formData.get("altText");
+    const { storagePath, publicUrl } = await uploadImage(validated);
 
-    // In production, upload to Supabase Storage here
-    // For now, we just store the metadata
-    const [asset] = await db.insert(mediaAssets).values({
-      id: uuidv4(),
-      storagePath,
-      publicUrl: `/uploads/${storagePath}`, // placeholder
-      altText: file.name,
-      mimeType: file.type,
-      sizeBytes: file.size,
-    }).returning();
+    try {
+      const [asset] = await db
+        .insert(mediaAssets)
+        .values({
+          storagePath,
+          publicUrl,
+          altText: typeof altText === "string" && altText.trim() ? altText.trim() : null,
+          mimeType: validated.type,
+          sizeBytes: validated.size,
+        })
+        .returning();
 
-    return NextResponse.json(asset, { status: 201 });
+      return NextResponse.json(asset, { status: 201 });
+    } catch (error) {
+      // Same reasoning as the CV upload: a row-less object can never be
+      // listed or deleted from the admin, so unwind it.
+      await deleteObject(storagePath, "cv-images").catch(() => {});
+      throw error;
+    }
   } catch (error) {
     console.error("upload media error:", error);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
-}
-
-export async function GET() {
-  // Handled by the page
-  return NextResponse.json({ error: "Use GET /admin/media" }, { status: 404 });
 }

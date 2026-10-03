@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/guards";
 import { deleteCv, getCvById, isCvIdDeletable } from "@/lib/db/cv";
+import { deleteObject } from "@/lib/storage";
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -14,8 +15,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       return NextResponse.json({ error: "Cannot delete the active CV" }, { status: 400 });
     }
 
-    // Delete from Supabase Storage goes in lib/storage (design.md §5).
+    // Object first: a surviving row pointing at a deleted object looks
+    // intact but 500s on download, whereas an orphaned object is invisible
+    // and reaps nothing but bytes.
+    await deleteObject(existing.storagePath, "cv-files");
     await deleteCv(id);
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("delete CV error:", error);

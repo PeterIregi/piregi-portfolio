@@ -2,31 +2,37 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { cvFiles } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
+import { getActiveCv } from "@/lib/db/cv";
+import { getCvSignedPath } from "@/lib/storage";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
 
-    const [cv] = await db.select().from(cvFiles).where(eq(cvFiles.id, id)).limit(1);
-    if (!cv) {
+    // Only the active version is downloadable: the private bucket stays
+    // private and archived revisions can't be fetched by guessing an id
+    // (design.md §4).
+    const cv = await getActiveCv();
+    if (!cv || cv.id !== id) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+
+    // Sign before counting: a failed signature must not inflate the
+    // download count, but the increment itself is never read-modify-write.
+    const signedUrl = await getCvSignedPath(cv.storagePath);
 
     // Atomic increment (design.md §7: never read-modify-write).
     await db
       .update(cvFiles)
       .set({ downloadCount: sql`${cvFiles.downloadCount} + 1` })
-      .where(eq(cvFiles.id, id));
+      .where(eq(cvFiles.id, cv.id));
 
-    // TODO(lib/storage): replace with a redirect to a Supabase Storage
-    // signed URL once src/lib/storage is implemented (design.md §5). Until
-    // then, fail loudly rather than faking a file.
-    return NextResponse.json(
-      { error: "CV storage is not configured yet" },
-      { status: 503 }
-    );
+    return NextResponse.redirect(signedUrl, { status: 302 });
   } catch (error) {
     console.error("CV download error:", error);
-    return NextResponse.json({ error: "Failed to process download" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to process download" },
+      { status: 500 }
+    );
   }
 }

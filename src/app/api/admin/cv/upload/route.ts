@@ -1,25 +1,32 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/guards";
 import { insertActiveCv } from "@/lib/db/cv";
-import { v4 as uuidv4 } from "uuid";
+import { deleteObject, uploadCv } from "@/lib/storage";
+import { validateCvFile } from "@/lib/validation/upload";
 
 export async function POST(req: Request) {
   try {
     await requireAdmin();
+
     const formData = await req.formData();
-    const file = formData.get("file") as File | null;
+    const file = formData.get("file");
+    const rejection = validateCvFile(file instanceof File ? file : null);
+    if (rejection) {
+      return NextResponse.json({ error: `CV rejected: ${rejection}` }, { status: 400 });
+    }
 
-    if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
-    if (file.type !== "application/pdf") return NextResponse.json({ error: "File must be a PDF" }, { status: 400 });
-    if (file.size > 10 * 1024 * 1024) return NextResponse.json({ error: "File size must be less than 10MB" }, { status: 400 });
+    const validated = file as File;
+    const storagePath = await uploadCv(validated);
 
-    const storagePath = `cv/${uuidv4()}-${file.name.replace(/\s+/g, "-")}`;
-
-    // Upload to Supabase Storage private bucket goes in lib/storage
-    // (see design.md §5); metadata insert stays here for now.
-    await insertActiveCv({ storagePath, originalFilename: file.name });
-
-    return NextResponse.json({ success: true }, { status: 201 });
+    try {
+      const cv = await insertActiveCv({ storagePath, originalFilename: validated.name });
+      return NextResponse.json(cv, { status: 201 });
+    } catch (error) {
+      // The row is what makes the file reachable; without it the object is
+      // an orphan nobody can ever delete, so unwind the upload.
+      await deleteObject(storagePath, "cv-files").catch(() => {});
+      throw error;
+    }
   } catch (error) {
     console.error("CV upload error:", error);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
