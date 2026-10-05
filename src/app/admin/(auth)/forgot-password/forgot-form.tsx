@@ -56,11 +56,13 @@ export default function ForgotPasswordForm() {
               Enter your email and we will send you a link to reset your password.
             </p>
 
-            {error && (
-              <div className="mb-6 p-4 rounded border border-accent bg-accent/10 text-accent text-sm">
-                {error}
-              </div>
-            )}
+            <div role="alert">
+              {error && (
+                <div className="mb-6 p-4 rounded border border-accent bg-accent/10 text-accent text-sm">
+                  {error}
+                </div>
+              )}
+            </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <Input
