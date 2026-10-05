@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
@@ -71,12 +72,15 @@ export default async function HomePage() {
               {featured.map((project) => (
                 <article key={project.id}>
                   {project.coverUrl ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={project.coverUrl}
-                      alt={project.coverAltText ?? ""}
-                      className="aspect-[3/2] w-full rounded-lg object-cover"
-                    />
+                    <div className="relative aspect-[3/2] w-full">
+                      <Image
+                        src={project.coverUrl}
+                        alt={project.coverAltText ?? ""}
+                        fill
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                        className="rounded-lg object-cover"
+                      />
+                    </div>
                   ) : (
                     <div aria-hidden="true" className="aspect-[3/2] w-full rounded-lg bg-shell" />
                   )}
@@ -164,12 +168,13 @@ export default async function HomePage() {
                   </blockquote>
                   <footer className="flex items-center gap-3">
                     {testimonial.avatarUrl && (
-                      <div className="w-10 h-10 rounded-full bg-shell flex items-center justify-center overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                      <div className="relative w-10 h-10 rounded-full bg-shell flex items-center justify-center overflow-hidden">
+                        <Image
                           src={testimonial.avatarUrl}
                           alt={testimonial.avatarAltText ?? testimonial.authorName}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="40px"
+                          className="object-cover"
                         />
                       </div>
                     )}

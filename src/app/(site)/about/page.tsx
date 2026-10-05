@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Container } from "@/components/ui/container";
 import {
   getSiteSettings,
@@ -43,12 +44,14 @@ export default async function AboutPage() {
           </p>
         </div>
         {bioPhoto && (
-          <div aria-hidden="true" className="md:w-1/3 flex-shrink-0">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div aria-hidden="true" className="w-full md:w-1/3 flex-shrink-0 relative aspect-square">
+            <Image
               src={bioPhoto.publicUrl}
               alt={bioPhoto.altText ?? settings.brand?.name ?? "Portrait"}
-              className="aspect-square w-full rounded-lg object-cover"
+              fill
+              priority
+              sizes="(min-width: 768px) 33vw, 100vw"
+              className="rounded-lg object-cover"
             />
           </div>
         )}
