@@ -16,7 +16,8 @@
     "check:classes": "tsx scripts/class-check.ts",
     "db:check": "tsx scripts/schema-check.ts",
     "check:storage": "tsx scripts/storage-check.ts",
-    "a11y:check": "node scripts/a11y-check.mjs"
+    "a11y:check": "node scripts/a11y-check.mjs",
+    "login:check": "node scripts/login-check.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
