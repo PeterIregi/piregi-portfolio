@@ -336,6 +336,30 @@ constraints it works within:
   build against seed data first (WORKFLOW M2/M3).
 - Dark/light toggle is PRD §4.1 "Could": v1 ships light-only; the
   toggle is the optional last issue of the launch milestone (§12).
+- **Images render through `next/image`**, from the `cv-images` bucket
+  only. PRD §11 lists image optimization as the mitigation for media
+  storage cost, and PRD §7's Lighthouse bar cannot be met by raw
+  `<img>` on a cross-origin asset that is discovered late (#88). The
+  rules that make that decision stick:
+  - `images.remotePatterns` in `next.config.ts` matches
+    `https://*.supabase.co` **and** the pathname
+    `/storage/v1/object/public/cv-images/**`. The host is a wildcard
+    rather than derived from `SUPABASE_URL` because §8 scopes the
+    Supabase vars to production only and CI builds with no env vars at
+    all, so a host read from the environment would break every preview
+    and CI build. The pathname is what keeps the allowlist from
+    becoming a general-purpose image proxy. Never widen the pathname.
+  - `media_assets` has no intrinsic width/height columns (§2), so
+    images are rendered `fill` inside a `relative` parent that already
+    fixes the aspect ratio, with an accurate `sizes`. That reserves the
+    layout space before the bytes arrive, so no image shifts layout.
+  - `priority` is only for the LCP image of a route (the About bio
+    photo). Everything else stays lazy; `priority` everywhere would
+    defeat the lazy default that keeps the above-the-fold image count
+    down.
+  - Consequence: a raw `<img>` guarded by an
+    `@next/next/no-img-element` disable is no longer an accepted
+    pattern in this codebase; none should be reintroduced.
 
 ## 11. Legal & compliance
 
