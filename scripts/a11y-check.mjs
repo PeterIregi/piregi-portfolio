@@ -30,6 +30,12 @@ const PUBLIC_ROUTES = ["/", "/about", "/projects", "/experience", "/contact", "/
 
 /** The routes the header nav links to, i.e. the ones that own an aria-current. */
 const NAV_SECTIONS = ["/about", "/projects", "/experience", "/contact"];
+/**
+ * Reached through the header's Download CV button rather than a nav link: inside
+ * the nav landmark on phones and outside it on desktop, so its aria-current is
+ * asserted against the header instead of the nav (#84).
+ */
+const CV_ROUTE = "/cv";
 
 let failures = 0;
 
@@ -203,10 +209,7 @@ async function checkRoute(browser, route) {
   const zeroSize = stops.filter((s) => s.focusableSize.startsWith("0x") || s.focusableSize.endsWith("x0"));
   ok(zeroSize.length === 0, "no tab stop is zero-sized", zeroSize.map((s) => `${s.tag} "${s.name}"`).join("; "));
 
-  // --- the active nav item is announced, not just coloured -----------------
-  // Only the four sections are nav links. /cv is reached through the header's
-  // Download CV button, which sits outside the nav landmark, so it is not
-  // expected to carry aria-current.
+  // --- the active destination is announced, not just coloured ---------------
   const navState = await page.evaluate(() => {
     const links = [...document.querySelectorAll('nav a[href]')];
     const current = links.filter((a) => a.getAttribute("aria-current") === "page");
@@ -221,10 +224,29 @@ async function checkRoute(browser, route) {
       `active nav item carries aria-current="page"`,
       `current=[${navState.current.join(", ")}] expected ${route}`
     );
-  } else {
+  }
+
+  if (route === CV_ROUTE) {
+    // CV_ROUTE is passed in rather than interpolated: the callback is
+    // serialised and evaluated in the page, where module scope does not exist.
+    const cvCurrent = await page.evaluate(
+      (href) =>
+        [...document.querySelectorAll(`header a[href="${href}"]`)]
+          .filter((a) => a.getAttribute("aria-current") === "page")
+          .map((a) => a.getAttribute("href")),
+      CV_ROUTE
+    );
+    ok(
+      cvCurrent.length === 1,
+      `Download CV carries aria-current="page" on ${CV_ROUTE}`,
+      `current=[${cvCurrent.join(", ")}]`
+    );
+  } else if (!NAV_SECTIONS.includes(route)) {
     console.log(
-      `NOTE  ${route} is not a nav section, so aria-current is not asserted` +
-        (navState.current.length === 0 ? " (none present)" : ` (current=[${navState.current.join(", ")}])`)
+      `NOTE  ${route} is not a header destination, so aria-current is not asserted` +
+        (navState.current.length === 0
+          ? " (none present)"
+          : ` (current=[${navState.current.join(", ")}])`)
     );
   }
 

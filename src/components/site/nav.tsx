@@ -34,6 +34,16 @@ export function Nav({ cvHref = "/cv", brand }: { cvHref?: string; brand?: { name
   const [openedAt, setOpenedAt] = useState<string | null>(null);
   const open = openedAt === pathname;
 
+  // /cv is a real destination reached from a header-level link, so it announces
+  // its own location the way the four sections do (#84). On phones it is inside
+  // the nav landmark and on desktop it is outside it, which is why it was
+  // announced in neither. The variant change carries the same state visually:
+  // the two differ in fill, border and text, so it does not rely on colour
+  // alone, and it reuses tokens the contrast check already covers rather than
+  // adding a ring that would sit in the same 2px offset the focus outline uses.
+  const onCvPage = pathname === cvHref;
+  const cvVariant = onCvPage ? "secondary" : "primary";
+
   return (
     <header className="border-b border-line sticky top-0 z-50 bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/80">
       <Container className="flex h-16 items-center justify-between gap-4">
@@ -59,7 +69,13 @@ export function Nav({ cvHref = "/cv", brand }: { cvHref?: string; brand?: { name
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Button variant="primary" size="sm" href={cvHref} className="hidden sm:inline-flex">
+          <Button
+            variant={cvVariant}
+            size="sm"
+            href={cvHref}
+            aria-current={onCvPage ? "page" : undefined}
+            className="hidden sm:inline-flex"
+          >
             Download CV
           </Button>
           <Button
@@ -109,7 +125,13 @@ export function Nav({ cvHref = "/cv", brand }: { cvHref?: string; brand?: { name
                 {link.label}
               </Link>
             ))}
-            <Button variant="primary" size="sm" href={cvHref} className="mt-3 sm:hidden">
+            <Button
+              variant={cvVariant}
+              size="sm"
+              href={cvHref}
+              aria-current={onCvPage ? "page" : undefined}
+              className="mt-3 sm:hidden"
+            >
               Download CV
             </Button>
           </Container>
