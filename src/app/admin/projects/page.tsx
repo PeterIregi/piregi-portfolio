@@ -41,7 +41,7 @@ export default async function AdminProjectsPage() {
             </thead>
             <tbody className="divide-y divide-line">
               {projects.map((project) => (
-                <tr key={project.id} className="hover:bg-claret/5">
+                <tr key={project.id} className="hover:bg-accent/5">
                   <td className="p-4">
                     <p className="font-medium text-ink">{project.title}</p>
                     <p className="text-sm text-graphite truncate max-w-xs">{project.slug}</p>
@@ -49,7 +49,7 @@ export default async function AdminProjectsPage() {
                   <td className="p-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       project.status === "published"
-                        ? "bg-claret/10 text-claret"
+                        ? "bg-accent/10 text-accent"
                         : "bg-graphite/10 text-graphite"
                     }`}>
                       {project.status}
@@ -59,7 +59,7 @@ export default async function AdminProjectsPage() {
                     {format(new Date(project.updatedAt), "MMM d, yyyy")}
                   </td>
                   <td className="p-4 text-right">
-                    <Link href={`/admin/projects/${project.id}/edit`} className="text-claret hover:text-claret-deep text-sm font-medium">
+                    <Link href={`/admin/projects/${project.id}/edit`} className="text-accent hover:text-accent-deep text-sm font-medium">
                       Edit
                     </Link>
                   </td>

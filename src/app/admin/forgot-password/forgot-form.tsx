@@ -57,7 +57,7 @@ export default function ForgotPasswordForm() {
             </p>
 
             {error && (
-              <div className="mb-6 p-4 rounded border border-claret bg-claret/10 text-claret text-sm">
+              <div className="mb-6 p-4 rounded border border-accent bg-accent/10 text-accent text-sm">
                 {error}
               </div>
             )}
@@ -82,7 +82,7 @@ export default function ForgotPasswordForm() {
         )}
 
         <p className="mt-6 text-center text-sm text-graphite">
-          <a href="/admin/login" className="text-claret hover:text-claret-deep">
+          <a href="/admin/login" className="text-accent hover:text-accent-deep">
             Back to sign in
           </a>
         </p>

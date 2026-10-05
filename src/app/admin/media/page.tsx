@@ -119,7 +119,7 @@ export default function AdminMediaPage() {
           value={altText}
           onChange={(e) => setAltText(e.target.value)}
           placeholder="Describe the image for screen readers"
-          className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
+          className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         />
         <p className="text-xs text-graphite mt-1.5">
           Stored with the asset and reused wherever the image is rendered. Accepted:{" "}
@@ -130,7 +130,7 @@ export default function AdminMediaPage() {
       {error && (
         <div
           role="alert"
-          className="mb-6 p-4 rounded border border-claret bg-claret/10 text-claret text-sm"
+          className="mb-6 p-4 rounded border border-accent bg-accent/10 text-accent text-sm"
         >
           {error}
         </div>
@@ -146,10 +146,10 @@ export default function AdminMediaPage() {
             <div key={img.id} className="relative group bg-shell rounded-lg overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={img.publicUrl} alt={img.altText ?? ""} className="w-full h-48 object-cover" />
-              <div className="absolute inset-0 bg-claret/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute inset-0 bg-accent/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
                   onClick={() => handleDelete(img.id)}
-                  className="text-white px-4 py-2 rounded hover:bg-claret-deep"
+                  className="text-white px-4 py-2 rounded hover:bg-accent-deep"
                 >
                   Delete
                 </button>
@@ -162,7 +162,7 @@ export default function AdminMediaPage() {
                 {img.altText ? (
                   <p className="text-xs text-graphite mt-1 truncate">{img.altText}</p>
                 ) : (
-                  <p className="text-xs text-claret mt-1">Missing alt text</p>
+                  <p className="text-xs text-accent mt-1">Missing alt text</p>
                 )}
               </div>
             </div>

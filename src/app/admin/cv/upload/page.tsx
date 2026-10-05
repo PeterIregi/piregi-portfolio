@@ -61,7 +61,7 @@ export default function UploadCvPage() {
       </header>
 
       <form onSubmit={handleSubmit} className="max-w-xl space-y-6">
-        {formError && <div className="p-4 rounded border border-claret bg-claret/10 text-claret text-sm">{formError}</div>}
+        {formError && <div className="p-4 rounded border border-accent bg-accent/10 text-accent text-sm">{formError}</div>}
 
         <div className="flex flex-col gap-2">
           <label htmlFor="cvFile" className="text-sm font-medium text-ink">PDF File</label>
@@ -70,7 +70,7 @@ export default function UploadCvPage() {
             type="file"
             accept="application/pdf"
             required
-            className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
+            className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           />
           <p className="text-sm text-graphite">PDF only, max {MAX_CV_LABEL}</p>
         </div>
@@ -80,7 +80,7 @@ export default function UploadCvPage() {
         </Button>
       </form>
 
-      <Link href="/admin/cv" className="text-claret hover:text-claret-deep text-sm inline-block mt-6">← Back to CV management</Link>
+      <Link href="/admin/cv" className="text-accent hover:text-accent-deep text-sm inline-block mt-6">← Back to CV management</Link>
     </Container>
   );
 }

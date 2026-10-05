@@ -64,20 +64,20 @@ export default function NewProjectPage() {
     <Container className="py-8">
       <header className="mb-8">
         <h1 className="font-display text-3xl text-ink">New Project</h1>
-        <Link href="/admin/projects" className="text-claret hover:text-claret-deep text-sm inline-block mt-2">
+        <Link href="/admin/projects" className="text-accent hover:text-accent-deep text-sm inline-block mt-2">
           ← Back to projects
         </Link>
       </header>
 
       <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
         {error && (
-          <div className="p-4 rounded border border-claret bg-claret/10 text-claret text-sm">
+          <div className="p-4 rounded border border-accent bg-accent/10 text-accent text-sm">
             {error}
           </div>
         )}
 
         {formError && (
-          <div className="p-4 rounded border border-claret bg-claret/10 text-claret text-sm">
+          <div className="p-4 rounded border border-accent bg-accent/10 text-accent text-sm">
             {formError}
           </div>
         )}
@@ -94,7 +94,7 @@ export default function NewProjectPage() {
             rows={6}
             value={description}
             onChange={e => setDescription(e.target.value)}
-            className="h-32 w-full rounded border border-edge bg-paper px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret resize-y"
+            className="h-32 w-full rounded border border-edge bg-paper px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent resize-y"
             placeholder="Full project description..."
           />
         </div>
@@ -108,7 +108,7 @@ export default function NewProjectPage() {
           <select
             value={status}
             onChange={e => setStatus(e.target.value as "draft" | "published")}
-            className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
+            className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <option value="draft">Draft</option>
             <option value="published">Published</option>

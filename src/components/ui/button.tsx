@@ -4,7 +4,7 @@ type Variant = "primary" | "secondary" | "ghost";
 type Size = "sm" | "md";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret";
+  "inline-flex items-center justify-center gap-2 rounded font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
 const variants: Record<Variant, string> = {
   // `text-paper` rather than `text-white`: paper is the theme's surface token,
@@ -12,9 +12,9 @@ const variants: Record<Variant, string> = {
   // accent (9.2:1); in dark mode it is the dark surface colour on the lighter
   // dark-mode accent (6.2:1). A hardcoded white would put white text on a
   // light red in dark mode at 2.9:1.
-  primary: "bg-claret text-paper hover:bg-claret-deep",
+  primary: "bg-accent text-paper hover:bg-accent-deep",
   secondary: "border border-edge bg-paper text-ink hover:bg-shell",
-  ghost: "text-claret hover:text-claret-deep",
+  ghost: "text-accent hover:text-accent-deep",
 };
 
 const sizes: Record<Size, string> = {

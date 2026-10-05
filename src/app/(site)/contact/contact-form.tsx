@@ -75,7 +75,7 @@ export default function ContactForm({ success }: Props) {
             user is told nothing went wrong. */}
         <div role="alert">
           {error && (
-            <p className="p-4 rounded border border-claret bg-claret/10 text-claret text-sm">
+            <p className="p-4 rounded border border-accent bg-accent/10 text-accent text-sm">
               {error}
             </p>
           )}
@@ -114,7 +114,7 @@ export default function ContactForm({ success }: Props) {
             rows={6}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="h-32 w-full rounded border border-edge bg-paper px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret resize-y"
+            className="h-32 w-full rounded border border-edge bg-paper px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent resize-y"
             placeholder="Your message..."
             disabled={loading}
           />

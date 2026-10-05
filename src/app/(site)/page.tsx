@@ -83,7 +83,7 @@ export default async function HomePage() {
                   <h3 className="mt-5 font-display text-xl text-ink">
                     <Link
                       href={`/projects/${project.slug}`}
-                      className="hover:text-claret transition-colors"
+                      className="hover:text-accent transition-colors"
                     >
                       {project.title}
                     </Link>
@@ -99,7 +99,7 @@ export default async function HomePage() {
             </div>
 
             <div className="mt-10 text-center">
-              <Link href="/projects" className="text-claret hover:text-claret-deep font-medium inline-flex items-center gap-1">
+              <Link href="/projects" className="text-accent hover:text-accent-deep font-medium inline-flex items-center gap-1">
                 View all projects
               </Link>
             </div>
@@ -117,21 +117,21 @@ export default async function HomePage() {
 
           <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto text-center">
             <article className="p-6">
-              <span className="inline-block w-12 h-12 rounded-full bg-claret/10 flex items-center justify-center mx-auto mb-4 text-claret text-2xl" aria-hidden="true">
+              <span className="inline-block w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4 text-accent text-2xl" aria-hidden="true">
                 &#128187;
               </span>
               <h3 className="font-display text-xl text-ink mb-2">Full-Stack Development</h3>
               <p className="text-graphite">End-to-end web applications with React, Node.js, and modern cloud infrastructure.</p>
             </article>
             <article className="p-6">
-              <span className="inline-block w-12 h-12 rounded-full bg-claret/10 flex items-center justify-center mx-auto mb-4 text-claret text-2xl" aria-hidden="true">
+              <span className="inline-block w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4 text-accent text-2xl" aria-hidden="true">
                 &#128165;
               </span>
               <h3 className="font-display text-xl text-ink mb-2">System Architecture</h3>
               <p className="text-graphite">Designing scalable, maintainable systems with clear boundaries and observable operations.</p>
             </article>
             <article className="p-6">
-              <span className="inline-block w-12 h-12 rounded-full bg-claret/10 flex items-center justify-center mx-auto mb-4 text-claret text-2xl" aria-hidden="true">
+              <span className="inline-block w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4 text-accent text-2xl" aria-hidden="true">
                 &#9989;
               </span>
               <h3 className="font-display text-xl text-ink mb-2">Quality & Delivery</h3>

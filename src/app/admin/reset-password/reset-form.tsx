@@ -60,7 +60,7 @@ export default function ResetPasswordForm() {
         <h1 className="font-display text-3xl text-ink mb-8 text-center">Set new password</h1>
 
         {error && (
-          <div className="mb-6 p-4 rounded border border-claret bg-claret/10 text-claret text-sm">
+          <div className="mb-6 p-4 rounded border border-accent bg-accent/10 text-accent text-sm">
             {error}
           </div>
         )}
@@ -94,7 +94,7 @@ export default function ResetPasswordForm() {
         </form>
 
         <p className="mt-6 text-center text-sm text-graphite">
-          <a href="/admin/login" className="text-claret hover:text-claret-deep">
+          <a href="/admin/login" className="text-accent hover:text-accent-deep">
             Back to sign in
           </a>
         </p>

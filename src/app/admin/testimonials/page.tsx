@@ -40,14 +40,14 @@ export default async function AdminTestimonialsPage() {
             </thead>
             <tbody className="divide-y divide-line">
               {testimonials.map((t) => (
-                <tr key={t.id} className="hover:bg-claret/5">
+                <tr key={t.id} className="hover:bg-accent/5">
                   <td className="p-4">
                     <p className="font-medium text-ink">{t.authorName}</p>
                     <p className="text-sm text-graphite">{t.authorTitle} {t.company ? `· ${t.company}` : ""}</p>
                   </td>
                   <td className="p-4 text-sm text-graphite max-w-md truncate">{t.quote}</td>
                   <td className="p-4 text-right">
-                    <Link href={`/admin/testimonials/${t.id}/edit`} className="text-claret hover:text-claret-deep text-sm font-medium">
+                    <Link href={`/admin/testimonials/${t.id}/edit`} className="text-accent hover:text-accent-deep text-sm font-medium">
                       Edit
                     </Link>
                   </td>

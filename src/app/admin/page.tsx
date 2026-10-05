@@ -28,7 +28,7 @@ export default async function AdminDashboard() {
         </div>
         <div className="bg-shell rounded-lg p-6">
           <h3 className="font-semibold text-ink mb-2">New Messages</h3>
-          <p className="font-display text-3xl text-claret">{stats.newMessages}</p>
+          <p className="font-display text-3xl text-accent">{stats.newMessages}</p>
         </div>
         <div className="bg-shell rounded-lg p-6">
           <h3 className="font-semibold text-ink mb-2">CV Downloads</h3>
@@ -44,7 +44,7 @@ export default async function AdminDashboard() {
         <section className="bg-shell rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-xl text-ink">Recent Messages</h2>
-            <Link href="/admin/messages" className="text-sm text-claret hover:text-claret-deep">
+            <Link href="/admin/messages" className="text-sm text-accent hover:text-accent-deep">
               View all →
             </Link>
           </div>
@@ -62,7 +62,7 @@ export default async function AdminDashboard() {
                       </time>
                     </div>
                     <p className="text-sm text-graphite line-clamp-2">{msg.message}</p>
-                    <a href={`/admin/messages/${msg.id}`} className="text-sm text-claret hover:text-claret-deep inline-block mt-2">
+                    <a href={`/admin/messages/${msg.id}`} className="text-sm text-accent hover:text-accent-deep inline-block mt-2">
                       View →
                     </a>
                   </article>

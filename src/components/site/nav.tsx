@@ -15,13 +15,13 @@ const links = [
 ];
 
 // Shared by both nav renderings. `aria-current` is what tells a screen reader
-// which page you are on; the claret text colour alone does not, and colour is
+// which page you are on; the accent text colour alone does not, and colour is
 // the only thing distinguishing the active link visually.
 function linkClasses(pathname: string, href: string) {
   const active = pathname === href;
   return [
-    "rounded text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret",
-    active ? "text-claret" : "text-ink hover:text-claret",
+    "rounded text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+    active ? "text-accent" : "text-ink hover:text-accent",
   ].join(" ");
 }
 
@@ -39,7 +39,7 @@ export function Nav({ cvHref = "/cv", brand }: { cvHref?: string; brand?: { name
       <Container className="flex h-16 items-center justify-between gap-4">
         <Link
           href="/"
-          className="font-display text-xl font-semibold text-ink hover:text-claret transition-colors rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
+          className="font-display text-xl font-semibold text-ink hover:text-accent transition-colors rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           {brand?.name ?? "Piregi Portfolio"}
         </Link>

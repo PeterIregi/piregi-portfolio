@@ -42,13 +42,13 @@ export default async function AdminExperiencePage() {
             </thead>
             <tbody className="divide-y divide-line">
               {experiences.map((exp) => (
-                <tr key={exp.id} className="hover:bg-claret/5">
+                <tr key={exp.id} className="hover:bg-accent/5">
                   <td className="p-4">
                     <p className="font-medium text-ink">{exp.roleTitle}</p>
                   </td>
                   <td className="p-4 text-sm text-graphite">{exp.organization}</td>
                   <td className="p-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-claret/10 text-claret capitalize">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent/10 text-accent capitalize">
                       {exp.type}
                     </span>
                   </td>
@@ -56,7 +56,7 @@ export default async function AdminExperiencePage() {
                     {format(new Date(exp.startDate), "MMM yyyy")} – {exp.endDate ? format(new Date(exp.endDate), "MMM yyyy") : "Present"}
                   </td>
                   <td className="p-4 text-right">
-                    <Link href={`/admin/experience/${exp.id}/edit`} className="text-claret hover:text-claret-deep text-sm font-medium">
+                    <Link href={`/admin/experience/${exp.id}/edit`} className="text-accent hover:text-accent-deep text-sm font-medium">
                       Edit
                     </Link>
                   </td>

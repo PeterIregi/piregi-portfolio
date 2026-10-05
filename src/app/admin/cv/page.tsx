@@ -49,7 +49,7 @@ export default async function AdminCvPage() {
                   <td className="px-4 py-3 text-graphite">{cv.downloadCount}</td>
                   <td className="px-4 py-3">
                     {cv.isActive ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-claret/10 text-claret">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent/10 text-accent">
                         Active
                       </span>
                     ) : (
@@ -63,7 +63,7 @@ export default async function AdminCvPage() {
                       <form action={`/api/admin/cv/${cv.id}/activate`} method="POST" className="inline">
                         <button
                           type="submit"
-                          className="text-claret hover:text-claret-deep font-medium mr-3"
+                          className="text-accent hover:text-accent-deep font-medium mr-3"
                         >
                           Activate
                         </button>
@@ -73,7 +73,7 @@ export default async function AdminCvPage() {
                       <form action={`/api/admin/cv/${cv.id}/delete`} method="POST" className="inline">
                         <button
                           type="submit"
-                          className="text-graphite hover:text-claret font-medium"
+                          className="text-graphite hover:text-accent font-medium"
                         >
                           Delete
                         </button>

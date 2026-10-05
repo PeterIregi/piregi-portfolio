@@ -32,13 +32,13 @@ export default async function AdminMessagesPage() {
             </thead>
             <tbody className="divide-y divide-line">
               {messages.map((msg) => (
-                <tr key={msg.id} className="hover:bg-claret/5">
+                <tr key={msg.id} className="hover:bg-accent/5">
                   <td className="p-4 font-medium text-ink">{msg.name}</td>
                   <td className="p-4 text-sm text-graphite">{msg.email}</td>
                   <td className="p-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      msg.status === "new" ? "bg-claret/10 text-claret" :
-                      msg.status === "read" ? "bg-claret/10 text-claret" :
+                      msg.status === "new" ? "bg-accent/10 text-accent" :
+                      msg.status === "read" ? "bg-accent/10 text-accent" :
                       "bg-graphite/10 text-graphite"
                     }`}>
                       {msg.status}
@@ -48,7 +48,7 @@ export default async function AdminMessagesPage() {
                     {format(new Date(msg.submittedAt), "MMM d, yyyy HH:mm")}
                   </td>
                   <td className="p-4 text-right">
-                    <a href={`/admin/messages/${msg.id}`} className="text-claret hover:text-claret-deep text-sm font-medium">
+                    <a href={`/admin/messages/${msg.id}`} className="text-accent hover:text-accent-deep text-sm font-medium">
                       View
                     </a>
                   </td>

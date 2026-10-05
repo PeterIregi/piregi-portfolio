@@ -53,7 +53,7 @@ export default async function ExperiencePage() {
             <li key={exp.id} className="relative pl-8 md:pl-12 border-l-2 border-line">
               <div
                 aria-hidden="true"
-                className="absolute left-0 top-1.5 md:top-2 w-3 h-3 rounded-full bg-claret -translate-x-1/2"
+                className="absolute left-0 top-1.5 md:top-2 w-3 h-3 rounded-full bg-accent -translate-x-1/2"
               />
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-2">
                 <div>
@@ -63,7 +63,7 @@ export default async function ExperiencePage() {
                     {TYPE_LABEL[exp.type] ?? exp.type}
                   </p>
                   <h2 className="font-display text-xl text-ink mt-1">{exp.roleTitle}</h2>
-                  <p className="text-claret font-medium">{exp.organization}</p>
+                  <p className="text-accent font-medium">{exp.organization}</p>
                 </div>
                 <time
                   className="text-sm text-graphite whitespace-nowrap"

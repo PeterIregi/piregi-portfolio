@@ -80,7 +80,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       <Container className="pt-16 pb-12 lg:pt-24">
         <Link
           href="/projects"
-          className="text-sm text-graphite hover:text-claret transition-colors"
+          className="text-sm text-graphite hover:text-accent transition-colors"
         >
           All projects
         </Link>
@@ -89,7 +89,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <h1 className="font-display text-4xl lg:text-5xl text-ink">{project.title}</h1>
           {/* The single accent gesture on the page: one caret rule under the
               title, rather than an accent colour on every label. */}
-          <div aria-hidden="true" className="mt-6 h-0.5 w-16 bg-claret" />
+          <div aria-hidden="true" className="mt-6 h-0.5 w-16 bg-accent" />
           <p className="mt-6 text-lg leading-relaxed text-graphite">{project.summary}</p>
         </header>
 

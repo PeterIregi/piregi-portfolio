@@ -40,12 +40,12 @@ export default async function AdminSkillsPage() {
             </thead>
             <tbody className="divide-y divide-line">
               {skills.map((skill) => (
-                <tr key={skill.id} className="hover:bg-claret/5">
+                <tr key={skill.id} className="hover:bg-accent/5">
                   <td className="p-4 font-medium text-ink">{skill.name}</td>
                   <td className="p-4 text-sm text-graphite">{skill.category}</td>
                   <td className="p-4">
                     {skill.proficiency ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-claret/10 text-claret">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent/10 text-accent">
                         {skill.proficiency}/5
                       </span>
                     ) : (
@@ -53,7 +53,7 @@ export default async function AdminSkillsPage() {
                     )}
                   </td>
                   <td className="p-4 text-right">
-                    <Link href={`/admin/skills/${skill.id}/edit`} className="text-claret hover:text-claret-deep text-sm font-medium">
+                    <Link href={`/admin/skills/${skill.id}/edit`} className="text-accent hover:text-accent-deep text-sm font-medium">
                       Edit
                     </Link>
                   </td>
