@@ -145,11 +145,22 @@ async function checkRoute(browser, route) {
     mainId: document.querySelector("main")?.id ?? null,
     navsWithoutLabel: [...document.querySelectorAll("nav")].filter((n) => !n.getAttribute("aria-label")).length,
     imagesWithoutAlt: [...document.querySelectorAll("img")].filter((i) => !i.hasAttribute("alt")).length,
+    // `aria-hidden` on an ancestor hides the whole subtree, alt text included,
+    // so an image with real alt text inside one is announced as nothing (#89).
+    // axe-core does not flag this and `every <img> has alt` above passes it.
+    imagesHiddenWithAlt: [...document.querySelectorAll("img[alt]")]
+      .filter((i) => (i.getAttribute("alt") ?? "").trim() !== "" && i.closest('[aria-hidden="true"]'))
+      .length,
   }));
   ok(structure.h1 === 1, "exactly one h1", `found ${structure.h1}`);
   ok(structure.main === 1 && Boolean(structure.mainId), "one <main> landmark with an id", `id=${structure.mainId}`);
   ok(structure.navsWithoutLabel === 0, "every <nav> is labelled", `${structure.navsWithoutLabel} unlabelled`);
   ok(structure.imagesWithoutAlt === 0, "every <img> has alt", `${structure.imagesWithoutAlt} missing`);
+  ok(
+    structure.imagesHiddenWithAlt === 0,
+    "no <img> with real alt text sits inside aria-hidden",
+    `${structure.imagesHiddenWithAlt} announced as nothing`
+  );
 
   // --- the skip link is the first tab stop and actually moves focus --------
   const stops = await tabWalk(page);
