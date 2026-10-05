@@ -21,6 +21,12 @@ set -a
 source "$ENV_FILE"
 set +a
 
+# Local runs need this; production does not. Auth.js derives the trusted host
+# from VERCEL=1 on Vercel, but a bare `next start` has nothing to derive it
+# from, so every /api/auth/* endpoint 500s with UntrustedHost and the smoke
+# test reports a failing login against a perfectly healthy deploy (#83).
+export AUTH_TRUST_HOST="${AUTH_TRUST_HOST:-true}"
+
 # Validate required vars
 required_vars=(
   "DATABASE_URL"

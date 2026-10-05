@@ -30,6 +30,8 @@ Create `.env.local` from `.env.example` and fill in:
 - `DATABASE_URL`: Supabase Postgres connection string (dev project)
 - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`: dev project server keys
 - `AUTH_SECRET`: any long random string for session signing
+- `AUTH_TRUST_HOST`: `true` locally, so a production build accepts the request
+  host — see [Running a local production build](#running-a-local-production-build)
 - `RESEND_API_KEY`: optional locally; email falls back to console
   logging in dev when unset
 - `CONTACT_NOTIFY_EMAIL`: the inbox that gets contact-form submissions
@@ -42,6 +44,24 @@ pnpm db:check     # assert the database has every constraint the migrations decl
 pnpm db:seed      # load sample content (required for the site to render)
 pnpm dev
 ```
+
+### Running a local production build
+
+`pnpm dev` treats the request host as trusted; `pnpm build && pnpm start` does
+not. Without `AUTH_TRUST_HOST=true`, every `/api/auth/*` endpoint answers 500
+with `UntrustedHost`, submitting the login form lands on `/api/auth/error`, and
+`/admin/login` looks broken for reasons unrelated to whatever you just changed
+(#83). `.env.example` sets the variable; `scripts/deploy-test.sh` exports it for
+the same reason, so the smoke test doesn't report a failing login against a
+healthy deploy. Production does not need it — Vercel sets `VERCEL=1`, and
+Auth.js infers the trusted host from that — which is why
+`.env.production.example` deliberately omits it (design.md §8).
+
+One environment-specific database note: Supabase's connection pooler hostname is
+unreachable from networks where DNS64 synthesises `AAAA` records with no IPv6
+route. It surfaces as `ENETUNREACH` on `64:ff9b::...` from `pnpm db:migrate` or
+`pnpm db:check`, which reads like a credentials problem. Pinning the pooler's
+IPv4 literal in `DATABASE_URL` works around it.
 
 ### Database workflow
 
