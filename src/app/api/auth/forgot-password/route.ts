@@ -4,6 +4,7 @@ import { users, passwordResetTokens } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { hash } from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
+import { siteUrl } from "@/lib/site-url";
 
 export async function POST(req: Request) {
   try {
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
       expiresAt,
     });
 
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/admin/reset-password?token=${token}`;
+    const resetUrl = `${siteUrl()}/admin/reset-password?token=${token}`;
 
     // Send email (will log to console in dev if RESEND_API_KEY not set)
     const { sendPasswordReset } = await import("@/lib/email");
