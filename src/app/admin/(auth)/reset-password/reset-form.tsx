@@ -59,11 +59,15 @@ export default function ResetPasswordForm() {
       <div className="w-full max-w-md">
         <h1 className="font-display text-3xl text-ink mb-8 text-center">Set new password</h1>
 
-        {error && (
-          <div className="mb-6 p-4 rounded border border-accent bg-accent/10 text-accent text-sm">
-            {error}
-          </div>
-        )}
+        {/* Always rendered, text injected: a live region that arrives with its own
+            text is unreliably announced, and a failed reset moves no focus. */}
+        <div role="alert">
+          {error && (
+            <div className="mb-6 p-4 rounded border border-accent bg-accent/10 text-accent text-sm">
+              {error}
+            </div>
+          )}
+        </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
