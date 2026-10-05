@@ -353,10 +353,17 @@ constraints it works within:
     images are rendered `fill` inside a `relative` parent that already
     fixes the aspect ratio, with an accurate `sizes`. That reserves the
     layout space before the bytes arrive, so no image shifts layout.
-  - `priority` is only for the LCP image of a route (the About bio
-    photo). Everything else stays lazy; `priority` everywhere would
-    defeat the lazy default that keeps the above-the-fold image count
-    down.
+    It also means the parent has to fix the ratio: `fill` against an
+    auto-height parent collapses to zero. The project gallery plates
+    are pinned to 3:2 for that reason, so a non-3:2 screenshot is
+    cropped by `object-cover`. Capturing real dimensions at upload is
+    the durable fix (#90) and supersedes this when it lands.
+  - `priority` is for the LCP image of a route, and at most one per
+    route: the About bio photo (the LCP element #88 measured) and
+    the project detail cover (the largest image in that route's
+    first viewport). Everything else stays lazy; `priority` on
+    several images defeats the lazy default that keeps the
+    above-the-fold image count down.
   - Consequence: a raw `<img>` guarded by an
     `@next/next/no-img-element` disable is no longer an accepted
     pattern in this codebase; none should be reintroduced.

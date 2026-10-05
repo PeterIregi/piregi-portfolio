@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
@@ -143,9 +144,14 @@ export default function AdminMediaPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {images.map((img) => (
-            <div key={img.id} className="relative group bg-shell rounded-lg overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img.publicUrl} alt={img.altText ?? ""} className="w-full h-48 object-cover" />
+            <div key={img.id} className="relative group h-48 bg-shell rounded-lg overflow-hidden">
+              <Image
+                src={img.publicUrl}
+                alt={img.altText ?? ""}
+                fill
+                sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
               <div className="absolute inset-0 bg-accent/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
                   onClick={() => handleDelete(img.id)}

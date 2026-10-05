@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
@@ -118,12 +119,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       </Container>
 
       {project.coverUrl && (
-        <Container>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+        <Container className="relative aspect-[3/2]">
+          <Image
             src={project.coverUrl}
             alt={project.coverAltText ?? ""}
-            className="aspect-[3/2] w-full rounded-lg object-cover"
+            fill
+            priority
+            sizes="(min-width: 1152px) 1152px, 100vw"
+            className="rounded-lg object-cover"
           />
         </Container>
       )}
@@ -165,13 +168,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             {plates.map((plate, index) => (
               <figure
                 key={plate.id}
-                className={index === 0 ? "sm:col-span-2" : undefined}
+                className={`relative aspect-[3/2] ${index === 0 ? "sm:col-span-2" : ""}`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={plate.publicUrl}
                   alt={plate.altText ?? ""}
-                  className="w-full rounded-lg border border-line object-cover"
+                  fill
+                  sizes="(min-width: 640px) 66vw, 100vw"
+                  className="rounded-lg border border-line object-cover"
                 />
               </figure>
             ))}

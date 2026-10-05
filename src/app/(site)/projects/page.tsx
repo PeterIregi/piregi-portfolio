@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { listPublishedProjects } from "@/lib/db/queries/public";
@@ -37,12 +38,15 @@ export default async function ProjectsPage() {
           {projects.map((project) => (
             <article key={project.id}>
               {project.coverUrl && (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={project.coverUrl}
-                  alt={project.coverAltText ?? ""}
-                  className="aspect-[3/2] w-full rounded-lg object-cover"
-                />
+                <div className="relative aspect-[3/2] w-full">
+                  <Image
+                    src={project.coverUrl}
+                    alt={project.coverAltText ?? ""}
+                    fill
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className="rounded-lg object-cover"
+                  />
+                </div>
               )}
               <h2 className="mt-5 font-display text-2xl text-ink">
                 {/* The title is the link: no arrow-suffixed button on every
