@@ -63,7 +63,7 @@ export default async function AboutPage() {
               <ul className="space-y-2 text-graphite">
                 {categorySkills.map((skill) => (
                   <li key={skill.id} className="flex items-center gap-2">
-                    <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-claret" />
+                    <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-accent" />
                     {skill.name}
                     {skill.proficiency ? (
                       <span className="ml-auto text-xs text-graphite/60">
@@ -83,10 +83,10 @@ export default async function AboutPage() {
           Values
         </h2>
         <ul className="space-y-4 text-graphite max-w-2xl">
-          <li className="flex gap-3"><span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-claret mt-2 flex-shrink-0" />Write code that is easy to delete, not just easy to extend.</li>
-          <li className="flex gap-3"><span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-claret mt-2 flex-shrink-0" />Optimize for readability; the next reader might be you in six months.</li>
-          <li className="flex gap-3"><span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-claret mt-2 flex-shrink-0" />Ship small, learn fast, iterate.</li>
-          <li className="flex gap-3"><span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-claret mt-2 flex-shrink-0" />Accessibility and performance are features, not afterthoughts.</li>
+          <li className="flex gap-3"><span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />Write code that is easy to delete, not just easy to extend.</li>
+          <li className="flex gap-3"><span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />Optimize for readability; the next reader might be you in six months.</li>
+          <li className="flex gap-3"><span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />Ship small, learn fast, iterate.</li>
+          <li className="flex gap-3"><span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />Accessibility and performance are features, not afterthoughts.</li>
         </ul>
       </section>
     </Container>

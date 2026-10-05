@@ -19,7 +19,7 @@ export function Input({ label, id, describedBy, invalid, type = "text", ...props
         type={type}
         aria-describedby={describedBy}
         aria-invalid={invalid || undefined}
-        className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret aria-invalid:border-claret"
+        className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-invalid:border-accent"
         {...props}
       />
     </div>

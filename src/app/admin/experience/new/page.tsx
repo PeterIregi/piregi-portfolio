@@ -60,14 +60,14 @@ export default function NewExperiencePage() {
     <Container className="py-8">
       <header className="mb-8">
         <h1 className="font-display text-3xl text-ink">New Experience</h1>
-        <Link href="/admin/experience" className="text-claret hover:text-claret-deep text-sm inline-block mt-2">
+        <Link href="/admin/experience" className="text-accent hover:text-accent-deep text-sm inline-block mt-2">
           ← Back to experience
         </Link>
       </header>
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
-        {error && <div className="p-4 rounded border border-claret bg-claret/10 text-claret text-sm">{error}</div>}
-        {formError && <div className="p-4 rounded border border-claret bg-claret/10 text-claret text-sm">{formError}</div>}
+        {error && <div className="p-4 rounded border border-accent bg-accent/10 text-accent text-sm">{error}</div>}
+        {formError && <div className="p-4 rounded border border-accent bg-accent/10 text-accent text-sm">{formError}</div>}
 
         <Input label="Role Title" id="roleTitle" name="roleTitle" type="text" value={roleTitle} onChange={e => setRoleTitle(e.target.value)} required />
         <Input label="Organization" id="organization" name="organization" type="text" value={organization} onChange={e => setOrganization(e.target.value)} required />
@@ -77,12 +77,12 @@ export default function NewExperiencePage() {
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="description" className="text-sm font-medium text-ink">Description</label>
-          <textarea id="description" name="description" required rows={4} value={description} onChange={e => setDescription(e.target.value)} className="h-24 w-full rounded border border-edge bg-paper px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret resize-y" placeholder="Description..." />
+          <textarea id="description" name="description" required rows={4} value={description} onChange={e => setDescription(e.target.value)} className="h-24 w-full rounded border border-edge bg-paper px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent resize-y" placeholder="Description..." />
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-ink">Type</label>
-            <select value={type} onChange={e => setType(e.target.value as "work" | "education" | "certification")} className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret">
+            <select value={type} onChange={e => setType(e.target.value as "work" | "education" | "certification")} className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
               <option value="work">Work</option>
               <option value="education">Education</option>
               <option value="certification">Certification</option>

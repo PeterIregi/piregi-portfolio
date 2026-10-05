@@ -36,10 +36,10 @@ export function AdminSidebar({ user }: { user: { id?: string; email?: string | n
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
                 active
-                  ? "bg-claret/10 text-claret font-semibold"
-                  : "text-ink hover:bg-claret/5 hover:text-claret"
+                  ? "bg-accent/10 text-accent font-semibold"
+                  : "text-ink hover:bg-accent/5 hover:text-accent"
               }`}
             >
               <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">

@@ -24,14 +24,14 @@ export default async function MessageDetailPage({ params }: { params: Promise<{ 
   return (
     <Container className="py-8">
       <div className="mb-8">
-        <Link href="/admin/messages" className="text-claret hover:text-claret-deep text-sm inline-block mb-4">
+        <Link href="/admin/messages" className="text-accent hover:text-accent-deep text-sm inline-block mb-4">
           ← Back to messages
         </Link>
         <div className="flex items-center justify-between">
           <h1 className="font-display text-3xl text-ink">Message from {msg.name}</h1>
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            msg.status === "new" ? "bg-claret/10 text-claret" :
-            msg.status === "read" ? "bg-claret/10 text-claret" :
+            msg.status === "new" ? "bg-accent/10 text-accent" :
+            msg.status === "read" ? "bg-accent/10 text-accent" :
             "bg-graphite/10 text-graphite"
           }`}>
             {msg.status}
@@ -47,7 +47,7 @@ export default async function MessageDetailPage({ params }: { params: Promise<{ 
         <div>
           <p className="text-sm text-graphite">Email</p>
           <p className="font-medium text-ink">
-            <a href={`mailto:${msg.email}`} className="text-claret hover:text-claret-deep">{msg.email}</a>
+            <a href={`mailto:${msg.email}`} className="text-accent hover:text-accent-deep">{msg.email}</a>
           </p>
         </div>
         <div>
@@ -65,7 +65,7 @@ export default async function MessageDetailPage({ params }: { params: Promise<{ 
                 body: JSON.stringify({ status: e.target.value }),
               });
             }}
-            className="h-11 w-full max-w-xs rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
+            className="h-11 w-full max-w-xs rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <option value="new">New</option>
             <option value="read">Read</option>
@@ -78,7 +78,7 @@ export default async function MessageDetailPage({ params }: { params: Promise<{ 
           <p className="text-ink whitespace-pre-wrap">{msg.message}</p>
         </div>
         <div className="flex gap-3 pt-4">
-          <a href={`mailto:${msg.email}`} className="text-claret hover:text-claret-deep font-medium">
+          <a href={`mailto:${msg.email}`} className="text-accent hover:text-accent-deep font-medium">
             Reply via email
           </a>
         </div>

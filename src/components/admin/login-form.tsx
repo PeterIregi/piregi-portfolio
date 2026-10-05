@@ -23,7 +23,7 @@ export function LoginForm() {
         invalid={Boolean(state.fieldErrors.email)}
       />
       {state.fieldErrors.email ? (
-        <p id="email-error" className="text-sm text-claret">
+        <p id="email-error" className="text-sm text-accent">
           {state.fieldErrors.email}
         </p>
       ) : null}
@@ -39,13 +39,13 @@ export function LoginForm() {
         invalid={Boolean(state.fieldErrors.password)}
       />
       {state.fieldErrors.password ? (
-        <p id="password-error" className="text-sm text-claret">
+        <p id="password-error" className="text-sm text-accent">
           {state.fieldErrors.password}
         </p>
       ) : null}
 
       {state.error ? (
-        <p role="alert" className="text-sm text-claret">
+        <p role="alert" className="text-sm text-accent">
           {state.error}
         </p>
       ) : null}

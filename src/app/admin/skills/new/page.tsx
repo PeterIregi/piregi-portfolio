@@ -48,7 +48,7 @@ export default function NewSkillPage() {
       </header>
 
       <form onSubmit={handleSubmit} className="max-w-xl space-y-6">
-        {formError && <div className="p-4 rounded border border-claret bg-claret/10 text-claret text-sm">{formError}</div>}
+        {formError && <div className="p-4 rounded border border-accent bg-accent/10 text-accent text-sm">{formError}</div>}
 
         <Input label="Name" id="name" name="name" type="text" value={name} onChange={e => setName(e.target.value)} required />
         <Input label="Category" id="category" name="category" type="text" value={category} onChange={e => setCategory(e.target.value)} required />

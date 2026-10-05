@@ -1,7 +1,7 @@
 import { Container } from "@/components/ui/container";
 
 const linkClass =
-  "hover:text-claret transition-colors rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret";
+  "hover:text-accent transition-colors rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
 function NewTabHint() {
   return <span className="sr-only"> (opens in a new tab)</span>;

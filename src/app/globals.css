@@ -10,8 +10,8 @@
      only: at 1.25:1 on paper it is far below the 3:1 that WCAG 1.4.11 requires
      for the edge you need in order to see where a control is. */
   --color-edge: #858680;
-  --color-claret: #8a1c2b;
-  --color-claret-deep: #6e1521;
+  --color-accent: #8a1c2b;
+  --color-accent-deep: #6e1521;
 
   --color-paper-dark: #17181c;
   --color-shell-dark: #1e1f22;
@@ -24,8 +24,8 @@
      white-on-accent legible in light mode, which it does at 9.2:1. Paired
      buttons use `text-paper`, which is the dark colour here, so one accent
      serves both roles in both schemes. */
-  --color-claret-dark: #e07b7b;
-  --color-claret-deep-dark: #ef8a86;
+  --color-accent-dark: #e07b7b;
+  --color-accent-deep-dark: #ef8a86;
 
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-newsreader), Georgia, "Times New Roman", serif;
@@ -42,8 +42,8 @@
     --color-ink: var(--color-ink-dark);
     --color-graphite: var(--color-graphite-dark);
     --color-line: var(--color-line-dark);
-    --color-claret: var(--color-claret-dark);
-    --color-claret-deep: var(--color-claret-deep-dark);
+    --color-accent: var(--color-accent-dark);
+    --color-accent-deep: var(--color-accent-deep-dark);
   }
 }
 
@@ -53,8 +53,8 @@ html.dark {
   --color-ink: var(--color-ink-dark);
   --color-graphite: var(--color-graphite-dark);
   --color-line: var(--color-line-dark);
-  --color-claret: var(--color-claret-dark);
-  --color-claret-deep: var(--color-claret-deep-dark);
+  --color-accent: var(--color-accent-dark);
+  --color-accent-deep: var(--color-accent-deep-dark);
 }
 
 body {

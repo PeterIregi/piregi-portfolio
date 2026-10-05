@@ -47,7 +47,7 @@ export default async function ProjectsPage() {
               <h2 className="mt-5 font-display text-2xl text-ink">
                 {/* The title is the link: no arrow-suffixed button on every
                     card, which design.md §10 calls out as a generic tell. */}
-                <Link href={`/projects/${project.slug}`} className="hover:text-claret transition-colors">
+                <Link href={`/projects/${project.slug}`} className="hover:text-accent transition-colors">
                   {project.title}
                 </Link>
               </h2>
