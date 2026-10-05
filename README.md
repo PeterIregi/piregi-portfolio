@@ -98,6 +98,7 @@ beyond the dev project.
 pnpm lint             # eslint
 pnpm typecheck        # tsc --noEmit
 pnpm check:contrast   # WCAG 2.1 AA contrast for both colour schemes
+pnpm check:classes    # every colour utility resolves to a theme token
 pnpm check:storage    # storage bucket round-trip against the live project
 ```
 
@@ -108,6 +109,21 @@ focus rings (WCAG 1.4.3, 1.4.11). It parses the values rather than copying
 them, so it fails if a token is renamed instead of silently keeping to test
 a colour nothing uses. When a check fails, change the token in
 `globals.css`, not the hex value in a component (design.md §10).
+
+`check:classes` needs no database either. Tailwind omits a utility it cannot
+resolve, so `bg-typo` compiles to no CSS at all and renders an unstyled
+element with no error from the compiler, `eslint`, `tsc`, or `pnpm build`.
+This check compiles the project's own `globals.css` with source scanning off,
+hands Tailwind every colour utility found in `src/`, and fails on the ones it
+declines — which is what a renamed or deleted token looks like from a
+component. It shares the `@theme` block with `check:contrast` rather than
+copying token names, so the two cannot disagree.
+
+The two checks answer different questions, and both are needed:
+`check:classes` proves a class *produces* CSS; `check:contrast` proves the
+colour it produces is legible in both schemes. A class can resolve perfectly
+and still fail contrast, which is how `text-white` reached the media page's
+delete button in the first place.
 
 ## Project docs
 
