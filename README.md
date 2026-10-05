@@ -122,6 +122,20 @@ pnpm check:classes    # every colour utility resolves to a theme token
 pnpm check:storage    # storage bucket round-trip against the live project
 ```
 
+Three more drive a running app in a browser and are deliberately not in CI,
+because every page is `force-dynamic`, reads the database, and design.md §8
+keeps `DATABASE_URL` off CI and preview builds:
+
+```bash
+BASE=http://localhost:3111 pnpm a11y:check    # keyboard, mobile nav, announcements, axe-core
+BASE=http://localhost:3111 pnpm login:check   # where a valid sign-in lands
+BASE=http://localhost:3111 node scripts/flows-check.mjs  # media and CV over real HTTP
+```
+
+`login:check` signs in as the seeded admin, so it needs a dev database and a
+freshly started server: login is rate limited to 5 attempts per email+IP per 15
+minutes and the counter lives in the server process (#6).
+
 `check:contrast` needs no database. It reads the `@theme` block out of
 `src/app/globals.css` and asserts every foreground/background pair the
 components produce clears 4.5:1 for text and 3:1 for control boundaries and
