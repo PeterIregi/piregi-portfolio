@@ -44,7 +44,7 @@ export default async function AboutPage() {
           </p>
         </div>
         {bioPhoto && (
-          <div aria-hidden="true" className="w-full md:w-1/3 flex-shrink-0 relative aspect-square">
+          <div className="w-full md:w-1/3 flex-shrink-0 relative aspect-square">
             <Image
               src={bioPhoto.publicUrl}
               alt={bioPhoto.altText ?? settings.brand?.name ?? "Portrait"}
