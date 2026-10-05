@@ -6,6 +6,10 @@
   --color-ink: #17181c;
   --color-graphite: #575c66;
   --color-line: #e5e6e3;
+  /* Boundary colour for interactive controls. `line` is for decorative rules
+     only: at 1.25:1 on paper it is far below the 3:1 that WCAG 1.4.11 requires
+     for the edge you need in order to see where a control is. */
+  --color-edge: #858680;
   --color-claret: #8a1c2b;
   --color-claret-deep: #6e1521;
 
@@ -14,8 +18,14 @@
   --color-ink-dark: #f3f4f2;
   --color-graphite-dark: #a0a4ac;
   --color-line-dark: #2d2e31;
-  --color-claret-dark: #c44a4a;
-  --color-claret-deep-dark: #e07b7b;
+  --color-edge-dark: #76777f;
+  /* The dark accent is lighter, not darker, than the light one: on dark paper
+     a link needs lightness to reach 4.5:1, and the same value has to keep
+     white-on-accent legible in light mode, which it does at 9.2:1. Paired
+     buttons use `text-paper`, which is the dark colour here, so one accent
+     serves both roles in both schemes. */
+  --color-claret-dark: #e07b7b;
+  --color-claret-deep-dark: #ef8a86;
 
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-newsreader), Georgia, "Times New Roman", serif;
