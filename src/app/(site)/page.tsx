@@ -11,6 +11,9 @@ import {
 export const metadata: Metadata = {
   title: "Piregi Portfolio",
   description: "Personal portfolio: work, experience, and a downloadable CV.",
+  // The other five public routes declare a canonical and `/` was the one
+  // route without one, so the sitemap lists the origin and no page claims it.
+  alternates: { canonical: "/" },
 };
 
 export default async function HomePage() {
