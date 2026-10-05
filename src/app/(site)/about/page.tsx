@@ -66,7 +66,7 @@ export default async function AboutPage() {
                     <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-accent" />
                     {skill.name}
                     {skill.proficiency ? (
-                      <span className="ml-auto text-xs text-graphite/60">
+                      <span className="ml-auto text-xs text-muted">
                         {skill.proficiency}/5
                       </span>
                     ) : null}

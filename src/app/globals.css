@@ -5,6 +5,12 @@
   --color-shell: #f3f4f2;
   --color-ink: #17181c;
   --color-graphite: #575c66;
+  /* De-emphasised text: secondary metadata, a missing value standing in for
+     one. A separate token rather than `text-graphite/60`, because an alpha
+     modifier composites the token against whatever is behind it and lands
+     at 2.6:1 on `shell` -- see #76. This value is the lightest that still
+     clears 4.5:1 on both light backgrounds. */
+  --color-muted: #666b75;
   --color-line: #e5e6e3;
   /* Boundary colour for interactive controls. `line` is for decorative rules
      only: at 1.25:1 on paper it is far below the 3:1 that WCAG 1.4.11 requires
@@ -17,6 +23,7 @@
   --color-shell-dark: #1e1f22;
   --color-ink-dark: #f3f4f2;
   --color-graphite-dark: #a0a4ac;
+  --color-muted-dark: #9498a0;
   --color-line-dark: #2d2e31;
   --color-edge-dark: #76777f;
   /* The dark accent is lighter, not darker, than the light one: on dark paper
@@ -41,6 +48,7 @@
     --color-shell: var(--color-shell-dark);
     --color-ink: var(--color-ink-dark);
     --color-graphite: var(--color-graphite-dark);
+    --color-muted: var(--color-muted-dark);
     --color-line: var(--color-line-dark);
     --color-accent: var(--color-accent-dark);
     --color-accent-deep: var(--color-accent-deep-dark);
@@ -52,6 +60,7 @@ html.dark {
   --color-shell: var(--color-shell-dark);
   --color-ink: var(--color-ink-dark);
   --color-graphite: var(--color-graphite-dark);
+  --color-muted: var(--color-muted-dark);
   --color-line: var(--color-line-dark);
   --color-accent: var(--color-accent-dark);
   --color-accent-deep: var(--color-accent-deep-dark);

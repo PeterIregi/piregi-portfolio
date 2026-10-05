@@ -41,6 +41,20 @@ const STOCK_COLOUR_RE =
   /^(?:[a-z][a-z0-9-]*:)*(?:bg|text|border|ring|fill|stroke|from|via|to|divide|decoration|outline)-(?:white|black)(?:\/[0-9]+)?$/;
 
 /**
+ * An opacity modifier on a text colour, e.g. `text-graphite/60`.
+ *
+ * `check:contrast` vouches for the tokens; an alpha modifier is applied
+ * afterwards, in the component, against whatever happens to be behind it. The
+ * shipped colour is then neither token the check inspected, so it can pass
+ * every guard and still fail WCAG 1.4.3: `text-graphite/60` reached 2.6:1 on
+ * `shell`, where `text-graphite` on its own is 6.08:1 (#76). Only text-bearing
+ * families are covered. `bg-accent/10` and the other panel tints are fine --
+ * those are decorative backgrounds, not text, and nothing depends on them
+ * being legible.
+ */
+const TEXT_ALPHA_RE = /^(?:[a-z][a-z0-9-]*:)*(?:text|placeholder)-[a-z0-9-]+\/[0-9]+$/;
+
+/**
  * The colour-bearing utility families. Each also holds non-colour members
  * (`text-sm`, `border-b`, `outline-2`, `divide-y`), which is safe to offer
  * Tailwind: those resolve, so they cannot be reported. Restricting to these
@@ -233,6 +247,21 @@ async function main() {
       for (const where of found.get(name)!.slice(0, 3)) console.error(`      ${where}`);
       console.error(
         `      -> use the token for the role instead (paper, ink, accent, shell): \`text-paper\` is \`text-white\` in light mode and near-black in dark, which is why it is the convention in button.tsx`
+      );
+    }
+  }
+
+  const alphaText = names.filter((name) => TEXT_ALPHA_RE.test(name)).sort();
+  if (alphaText.length) {
+    failed = true;
+    console.error(
+      `${alphaText.length} class(es) fade text with an opacity modifier, so the shipped colour is not the token check:contrast vouched for:\n`
+    );
+    for (const name of alphaText) {
+      console.error(`  ${name}`);
+      for (const where of found.get(name)!.slice(0, 3)) console.error(`      ${where}`);
+      console.error(
+        `      -> use the \`muted\` token for de-emphasised text, or \`graphite\`; if the tint is genuinely needed, add a token whose value is checked against its background`
       );
     }
   }

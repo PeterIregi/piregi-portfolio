@@ -67,6 +67,10 @@ const PAIRS: { label: string; fg: string; bg: string; min: number }[] = [
   { label: "secondary button label (text-ink)", fg: "ink", bg: "paper", min: 4.5 },
   { label: "text on a shell panel (text-ink on bg-shell)", fg: "ink", bg: "shell", min: 4.5 },
   { label: "muted text on shell", fg: "graphite", bg: "shell", min: 4.5 },
+  // `muted` carries the de-emphasised role at its own value rather than as an
+  // alpha modifier on `graphite`, which composited to 2.6:1 on shell (#76).
+  { label: "de-emphasised text (text-muted on bg-paper)", fg: "muted", bg: "paper", min: 4.5 },
+  { label: "de-emphasised text on shell", fg: "muted", bg: "shell", min: 4.5 },
   { label: "link on shell", fg: "accent", bg: "shell", min: 4.5 },
   { label: "error text (text-accent)", fg: "accent", bg: "paper", min: 4.5 },
   { label: "focus ring on paper", fg: "accent", bg: "paper", min: 3 },
