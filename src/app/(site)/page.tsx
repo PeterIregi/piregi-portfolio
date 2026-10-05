@@ -155,7 +155,7 @@ export default async function HomePage() {
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
               {testimonials.map((testimonial) => (
-                <article key={testimonial.id} className="bg-white rounded-lg border border-line p-6">
+                <article key={testimonial.id} className="bg-paper rounded-lg border border-line p-6">
                   <blockquote className="text-graphite leading-relaxed mb-4">
                     &ldquo;{testimonial.quote}&rdquo;
                   </blockquote>

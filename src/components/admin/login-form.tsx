@@ -19,8 +19,8 @@ export function LoginForm() {
         type="email"
         autoComplete="email"
         required
-        aria-describedby={state.fieldErrors.email ? "email-error" : undefined}
-        aria-invalid={state.fieldErrors.email ? true : undefined}
+        describedBy={state.fieldErrors.email ? "email-error" : undefined}
+        invalid={Boolean(state.fieldErrors.email)}
       />
       {state.fieldErrors.email ? (
         <p id="email-error" className="text-sm text-claret">
@@ -35,8 +35,8 @@ export function LoginForm() {
         type="password"
         autoComplete="current-password"
         required
-        aria-describedby={state.fieldErrors.password ? "password-error" : undefined}
-        aria-invalid={state.fieldErrors.password ? true : undefined}
+        describedBy={state.fieldErrors.password ? "password-error" : undefined}
+        invalid={Boolean(state.fieldErrors.password)}
       />
       {state.fieldErrors.password ? (
         <p id="password-error" className="text-sm text-claret">

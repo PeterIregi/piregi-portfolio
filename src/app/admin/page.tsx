@@ -54,7 +54,7 @@ export default async function AdminDashboard() {
             ) : (
               <>
                 {recentMessages.map((msg) => (
-                  <article key={msg.id} className="bg-white rounded p-4 border border-line">
+                  <article key={msg.id} className="bg-paper rounded p-4 border border-line">
                     <div className="flex items-center justify-between mb-2">
                       <p className="font-medium text-ink">{msg.name}</p>
                       <time className="text-sm text-graphite" dateTime={msg.submittedAt.toISOString()}>

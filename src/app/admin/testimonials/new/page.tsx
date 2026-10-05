@@ -57,7 +57,7 @@ export default function NewTestimonialPage() {
         <Input label="Company (optional)" id="company" name="company" type="text" value={company} onChange={e => setCompany(e.target.value)} />
         <div className="flex flex-col gap-2">
           <label htmlFor="quote" className="text-sm font-medium text-ink">Quote</label>
-          <textarea id="quote" name="quote" required rows={4} value={quote} onChange={e => setQuote(e.target.value)} className="h-24 w-full rounded border border-line bg-white px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret resize-y" placeholder="Testimonial quote..." />
+          <textarea id="quote" name="quote" required rows={4} value={quote} onChange={e => setQuote(e.target.value)} className="h-24 w-full rounded border border-edge bg-paper px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret resize-y" placeholder="Testimonial quote..." />
         </div>
         <Button type="submit" className="w-full sm:w-auto" disabled={loading}>{loading ? "Creating…" : "Create Testimonial"}</Button>
       </form>

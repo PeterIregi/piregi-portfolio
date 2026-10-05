@@ -68,11 +68,18 @@ export default function ContactForm({ success }: Props) {
       </header>
 
       <form onSubmit={handleSubmit} className="max-w-xl space-y-6">
-        {error && (
-          <div className="p-4 rounded border border-claret bg-claret/10 text-claret text-sm">
-            {error}
-          </div>
-        )}
+        {/* The container is always present and the message is injected into
+            it, because a live region that is itself added to the DOM at the
+            same moment as its text is unreliably announced. The error appears
+            after submit with no focus move, so without this a screen reader
+            user is told nothing went wrong. */}
+        <div role="alert">
+          {error && (
+            <p className="p-4 rounded border border-claret bg-claret/10 text-claret text-sm">
+              {error}
+            </p>
+          )}
+        </div>
 
         <Input
           label="Name"
@@ -107,7 +114,7 @@ export default function ContactForm({ success }: Props) {
             rows={6}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="h-32 w-full rounded border border-line bg-white px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret resize-y"
+            className="h-32 w-full rounded border border-edge bg-paper px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret resize-y"
             placeholder="Your message..."
             disabled={loading}
           />
@@ -116,7 +123,7 @@ export default function ContactForm({ success }: Props) {
         <input type="hidden" name="hp" value="" tabIndex={-1} autoComplete="off" />
 
         <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
-          {loading ? "Sending&hellip;" : "Send message"}
+          {loading ? "Sending…" : "Send message"}
         </Button>
       </form>
     </Container>

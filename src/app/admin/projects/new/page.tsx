@@ -94,7 +94,7 @@ export default function NewProjectPage() {
             rows={6}
             value={description}
             onChange={e => setDescription(e.target.value)}
-            className="h-32 w-full rounded border border-line bg-white px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret resize-y"
+            className="h-32 w-full rounded border border-edge bg-paper px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret resize-y"
             placeholder="Full project description..."
           />
         </div>
@@ -108,7 +108,7 @@ export default function NewProjectPage() {
           <select
             value={status}
             onChange={e => setStatus(e.target.value as "draft" | "published")}
-            className="h-11 w-full rounded border border-line bg-white px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
+            className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
           >
             <option value="draft">Draft</option>
             <option value="published">Published</option>

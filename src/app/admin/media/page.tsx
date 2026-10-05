@@ -119,7 +119,7 @@ export default function AdminMediaPage() {
           value={altText}
           onChange={(e) => setAltText(e.target.value)}
           placeholder="Describe the image for screen readers"
-          className="h-11 w-full rounded border border-line bg-white px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
+          className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
         />
         <p className="text-xs text-graphite mt-1.5">
           Stored with the asset and reused wherever the image is rendered. Accepted:{" "}
