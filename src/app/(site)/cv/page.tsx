@@ -52,7 +52,7 @@ export default async function CvPage() {
         ) : (
           <div className="py-12">
             <p className="text-graphite mb-4">No CV uploaded yet.</p>
-            <p className="text-sm text-graphite/60">
+            <p className="text-sm text-muted">
               Check back later or get in touch through the contact page.
             </p>
           </div>

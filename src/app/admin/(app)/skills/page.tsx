@@ -49,7 +49,7 @@ export default async function AdminSkillsPage() {
                         {skill.proficiency}/5
                       </span>
                     ) : (
-                      <span className="text-sm text-graphite/60">—</span>
+                      <span className="text-sm text-muted">—</span>
                     )}
                   </td>
                   <td className="p-4 text-right">
