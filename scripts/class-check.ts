@@ -1,5 +1,6 @@
 // Asserts that every colour utility the components ask for actually resolves to
-// something in the theme.
+// something in the theme, and that it came from the theme rather than from
+// Tailwind's stock palette.
 //
 // Tailwind v4 omits a utility it cannot resolve. A component using
 // `bg-claret` after the accent token was renamed compiles to *no CSS at all*,
@@ -15,10 +16,13 @@
 // (design.md §10), and a token renamed or deleted shows up here instead of
 // silently producing an unstyled element.
 //
-// The boundary of this check: it proves a class *resolves*, not that the
-// colour it resolves to is legible in both schemes. `text-white` on the accent
-// resolves perfectly and can still fail contrast; `pnpm check:contrast` owns
-// that half.
+// Resolution is not sufficient on its own, so this also rejects Tailwind's
+// stock colours. `text-white` resolves perfectly and is still wrong: in dark
+// mode the accent inverts to a light red, so white text lands on a light
+// background at 3.36:1. `check:contrast` cannot see it either, because that
+// check asserts a hand-written list of token pairs, and a component reaching
+// around the tokens is by definition not on the list. #72 is that instance;
+// #66 fixed fifteen of them for `bg-white`.
 
 import { compile } from "tailwindcss";
 import { readFile, readdir } from "node:fs/promises";
@@ -27,6 +31,14 @@ import path from "node:path";
 
 const SOURCE_DIR = "src";
 const GLOBALS_CSS = "src/app/globals.css";
+
+/**
+ * Tailwind's own palette, which is available to any component and therefore
+ * needs no token to be wrong. These do not flip with the colour scheme, which
+ * is the whole reason a component may not use them.
+ */
+const STOCK_COLOUR_RE =
+  /^(?:[a-z][a-z0-9-]*:)*(?:bg|text|border|ring|fill|stroke|from|via|to|divide|decoration|outline)-(?:white|black)(?:\/[0-9]+)?$/;
 
 /**
  * The colour-bearing utility families. Each also holds non-colour members
@@ -54,28 +66,54 @@ async function* walk(dir: string): AsyncGenerator<string> {
  * it starts on. Interpolations are skipped rather than parsed: their contents
  * are expressions, not class names, and the literals around them still carry
  * everything needed to find a class.
+ *
+ * Comments are skipped, and that is not cosmetic. `button.tsx` documents its
+ * own convention as "`text-paper` rather than `text-white`", and a scanner
+ * that treats those backticks as a template literal reports the class it is
+ * explaining the absence of.
  */
 function literals(source: string): { text: string; line: number }[] {
   const found: { text: string; line: number }[] = [];
   let line = 1;
 
   for (let i = 0; i < source.length; i++) {
-    if (source[i] === "\n") line++;
-    const quote = source[i];
-    if (quote !== '"' && quote !== "'" && quote !== "`") continue;
+    const char = source[i];
+    if (char === "\n") {
+      line++;
+      continue;
+    }
 
+    if (char === "/" && source[i + 1] === "/") {
+      while (i < source.length && source[i] !== "\n") i++;
+      line++;
+      continue;
+    }
+
+    if (char === "/" && source[i + 1] === "*") {
+      const end = source.indexOf("*/", i + 2);
+      const stop = end === -1 ? source.length : end + 2;
+      for (; i < stop; i++) if (source[i] === "\n") line++;
+      i--;
+      continue;
+    }
+
+    if (char !== '"' && char !== "'" && char !== "`") continue;
+
+    const quote = char;
+    const startLine = line;
     let text = "";
     let j = i + 1;
+
     while (j < source.length) {
-      const char = source[j];
-      if (char === "\n") line++;
-      if (char === "\\") {
+      const inner = source[j];
+      if (inner === "\n") line++;
+      if (inner === "\\") {
         text += source[j + 1] ?? "";
         j += 2;
         continue;
       }
-      if (char === quote) break;
-      if (char === "$" && source[j + 1] === "{") {
+      if (inner === quote) break;
+      if (inner === "$" && source[j + 1] === "{") {
         let depth = 1;
         j += 2;
         while (j < source.length && depth > 0) {
@@ -87,11 +125,11 @@ function literals(source: string): { text: string; line: number }[] {
         text += " ";
         continue;
       }
-      text += char;
+      text += inner;
       j++;
     }
 
-    if (text.trim()) found.push({ text, line });
+    if (text.trim()) found.push({ text, line: startLine });
     i = j;
   }
 
@@ -179,10 +217,29 @@ async function main() {
     process.exit(1);
   }
 
-  const emitted = emittedClasses(await buildFor([...found.keys()]));
-  const unresolved = [...found.keys()].filter((name) => !emitted.has(name)).sort();
+  const names = [...found.keys()];
+  const emitted = emittedClasses(await buildFor(names));
 
+  let failed = false;
+
+  const stock = names.filter((name) => STOCK_COLOUR_RE.test(name)).sort();
+  if (stock.length) {
+    failed = true;
+    console.error(
+      `${stock.length} class(es) use Tailwind's stock palette instead of a theme token, so they do not flip with the colour scheme:\n`
+    );
+    for (const name of stock) {
+      console.error(`  ${name}`);
+      for (const where of found.get(name)!.slice(0, 3)) console.error(`      ${where}`);
+      console.error(
+        `      -> use the token for the role instead (paper, ink, accent, shell): \`text-paper\` is \`text-white\` in light mode and near-black in dark, which is why it is the convention in button.tsx`
+      );
+    }
+  }
+
+  const unresolved = names.filter((name) => !emitted.has(name)).sort();
   if (unresolved.length) {
+    failed = true;
     console.error(
       `${unresolved.length} class(es) resolve to nothing, so Tailwind emits no CSS for them:\n`
     );
@@ -191,12 +248,15 @@ async function main() {
       for (const where of found.get(name)!.slice(0, 3)) console.error(`      ${where}`);
       console.error(`      -> use a token from the @theme block in ${GLOBALS_CSS}`);
     }
+  }
+
+  if (failed) {
     process.exitCode = 1;
     return;
   }
 
   console.log(
-    `all ${found.size} colour utilities across ${SOURCE_DIR}/ resolve against the @theme tokens`
+    `all ${names.length} colour utilities across ${SOURCE_DIR}/ come from @theme and resolve`
   );
 }
 

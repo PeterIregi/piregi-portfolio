@@ -119,11 +119,16 @@ declines — which is what a renamed or deleted token looks like from a
 component. It shares the `@theme` block with `check:contrast` rather than
 copying token names, so the two cannot disagree.
 
+It also rejects Tailwind's stock palette (`text-white`, `bg-black`, and their
+opacity variants) in components. Those resolve perfectly and are still wrong,
+because they do not flip with the colour scheme: `text-white` on the accent
+was 3.36:1 in dark mode (#72). `check:contrast` cannot catch that on its own,
+since a component reaching around the tokens is by definition not on its
+hand-written pair list.
+
 The two checks answer different questions, and both are needed:
-`check:classes` proves a class *produces* CSS; `check:contrast` proves the
-colour it produces is legible in both schemes. A class can resolve perfectly
-and still fail contrast, which is how `text-white` reached the media page's
-delete button in the first place.
+`check:classes` proves a class *comes from the theme and produces* CSS;
+`check:contrast` proves the colour it produces is legible in both schemes.
 
 ## Project docs
 
