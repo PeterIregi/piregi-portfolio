@@ -70,12 +70,21 @@ After first deploy, run migrations against production DB:
 ```bash
 # Locally with production DATABASE_URL
 DATABASE_URL="postgresql://..." pnpm db:migrate
+DATABASE_URL="postgresql://..." pnpm db:check
 ```
 
 Or use Supabase CLI:
 ```bash
 supabase db push --db-url "postgresql://..."
 ```
+
+`pnpm db:check` is not optional. A production database created before the
+constraint lines were added to migration 0000 applies the file without
+picking them up, and `db:generate` cannot detect that: it compares
+`schema.ts` to the snapshots, not the snapshots to your database. `db:check`
+compares the live catalog against the migration files and fails on anything
+missing, which is the only way to notice before a `NOT NULL` or a foreign
+key silently isn't there (#60).
 
 ---
 

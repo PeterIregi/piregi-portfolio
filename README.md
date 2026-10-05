@@ -38,6 +38,7 @@ Then:
 
 ```bash
 pnpm db:migrate   # apply the latest Drizzle migration
+pnpm db:check     # assert the database has every constraint the migrations declare
 pnpm db:seed      # load sample content (required for the site to render)
 pnpm dev
 ```
@@ -50,6 +51,7 @@ edited after being applied (design.md §8, `AGENTS.md` conventions).
 ```bash
 pnpm db:generate   # generate a migration from schema.ts changes
 pnpm db:migrate    # apply pending migrations to DATABASE_URL
+pnpm db:check      # fail if the database drifted from the migration files
 pnpm db:studio     # browse the dev database
 ```
 
@@ -57,6 +59,23 @@ pnpm db:studio     # browse the dev database
 locally and in preview deploys, the production project only in production
 deploys. There is no separate "apply to prod" command — switching the env
 var is the switch (design.md §8).
+
+Run `pnpm db:check` after `pnpm db:migrate`. `db:generate` only diffs
+`schema.ts` against the snapshot files, so it happily reports "nothing to
+migrate" while the database is missing statements the migration files
+declare; `db:check` queries the live catalog and compares it against the
+migration files to catch that. See [#60](https://github.com/PeterIregi/piregi-portfolio/issues/60)
+for how that drift happened and what it cost.
+
+**Never re-run `db:generate` for a migration that has already been
+applied.** `generate` writes a fresh `when` timestamp into
+`drizzle/meta/_journal.json`, and drizzle decides what is pending by
+comparing the newest `created_at` in `drizzle.__drizzle_migrations` against
+that timestamp. Raising a timestamp above the recorded one makes drizzle
+re-apply the whole file from the top, which fails on `CREATE TABLE` for a
+table that already exists — and the failure surfaces as a bare non-zero exit
+with no SQL error, so it reads as a connection problem. A change to an
+applied migration belongs in a new one, per design.md §8.
 
 ### Supabase projects
 
