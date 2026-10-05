@@ -92,6 +92,23 @@ and are not committed to this repo. Production keys go into Vercel env vars
 when that project is configured; nothing secret belongs in `.env.local`
 beyond the dev project.
 
+### Checks
+
+```bash
+pnpm lint             # eslint
+pnpm typecheck        # tsc --noEmit
+pnpm check:contrast   # WCAG 2.1 AA contrast for both colour schemes
+pnpm check:storage    # storage bucket round-trip against the live project
+```
+
+`check:contrast` needs no database. It reads the `@theme` block out of
+`src/app/globals.css` and asserts every foreground/background pair the
+components produce clears 4.5:1 for text and 3:1 for control boundaries and
+focus rings (WCAG 1.4.3, 1.4.11). It parses the values rather than copying
+them, so it fails if a token is renamed instead of silently keeping to test
+a colour nothing uses. When a check fails, change the token in
+`globals.css`, not the hex value in a component (design.md §10).
+
 ## Project docs
 
 This repo is organized around four documents. Read the one that matches

@@ -77,12 +77,12 @@ export default function NewExperiencePage() {
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="description" className="text-sm font-medium text-ink">Description</label>
-          <textarea id="description" name="description" required rows={4} value={description} onChange={e => setDescription(e.target.value)} className="h-24 w-full rounded border border-line bg-white px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret resize-y" placeholder="Description..." />
+          <textarea id="description" name="description" required rows={4} value={description} onChange={e => setDescription(e.target.value)} className="h-24 w-full rounded border border-edge bg-paper px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret resize-y" placeholder="Description..." />
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-ink">Type</label>
-            <select value={type} onChange={e => setType(e.target.value as "work" | "education" | "certification")} className="h-11 w-full rounded border border-line bg-white px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret">
+            <select value={type} onChange={e => setType(e.target.value as "work" | "education" | "certification")} className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret">
               <option value="work">Work</option>
               <option value="education">Education</option>
               <option value="certification">Certification</option>

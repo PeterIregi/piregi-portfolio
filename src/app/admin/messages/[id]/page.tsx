@@ -65,7 +65,7 @@ export default async function MessageDetailPage({ params }: { params: Promise<{ 
                 body: JSON.stringify({ status: e.target.value }),
               });
             }}
-            className="h-11 w-full max-w-xs rounded border border-line bg-white px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
+            className="h-11 w-full max-w-xs rounded border border-edge bg-paper px-3.5 text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
           >
             <option value="new">New</option>
             <option value="read">Read</option>

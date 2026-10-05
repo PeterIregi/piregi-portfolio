@@ -70,7 +70,7 @@ export default function UploadCvPage() {
             type="file"
             accept="application/pdf"
             required
-            className="h-11 w-full rounded border border-line bg-white px-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
+            className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
           />
           <p className="text-sm text-graphite">PDF only, max {MAX_CV_LABEL}</p>
         </div>

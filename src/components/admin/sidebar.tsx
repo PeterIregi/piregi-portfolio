@@ -21,33 +21,39 @@ export function AdminSidebar({ user }: { user: { id?: string; email?: string | n
 
   return (
     <aside className="w-64 border-r border-line bg-shell flex flex-col">
+      {/* Not a heading: every admin page renders its own <h1>, and two h1s on
+          one page leaves no single top-level heading for the page. */}
       <div className="p-4 border-b border-line">
-        <h1 className="font-display text-xl font-semibold text-ink">Admin</h1>
+        <p className="font-display text-xl font-semibold text-ink">Admin</p>
         <p className="text-sm text-graphite truncate">{user.email ?? "Unknown"}</p>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              pathname === item.href || pathname.startsWith(item.href + "/")
-                ? "bg-claret/10 text-claret"
-                : "text-ink hover:bg-claret/5 hover:text-claret"
-            }`}
-          >
-            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-              {item.icon2 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon2} />}
-              {item.icon3 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon3} />}
-              {item.icon4 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon4} />}
-              {item.icon5 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon5} />}
-              {item.icon6 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon6} />}
-            </svg>
-            {item.label}
-          </Link>
-        ))}
+      <nav aria-label="Admin" className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {navItems.map((item) => {
+          const active = pathname === item.href || pathname.startsWith(item.href + "/");
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret ${
+                active
+                  ? "bg-claret/10 text-claret font-semibold"
+                  : "text-ink hover:bg-claret/5 hover:text-claret"
+              }`}
+            >
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
+                {item.icon2 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon2} />}
+                {item.icon3 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon3} />}
+                {item.icon4 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon4} />}
+                {item.icon5 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon5} />}
+                {item.icon6 && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon6} />}
+              </svg>
+              {item.label}
+            </Link>
+          );
+        })}
       </nav>
 
       <div className="p-4 border-t border-line">

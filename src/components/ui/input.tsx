@@ -3,9 +3,12 @@ import type { ComponentPropsWithoutRef } from "react";
 export type InputProps = {
   label: string;
   id: string;
+  /** Id of the element holding this field's error text, when there is one. */
+  describedBy?: string;
+  invalid?: boolean;
 } & Omit<ComponentPropsWithoutRef<"input">, "id" | "className">;
 
-export function Input({ label, id, type = "text", ...props }: InputProps) {
+export function Input({ label, id, describedBy, invalid, type = "text", ...props }: InputProps) {
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-sm font-medium text-ink">
@@ -14,7 +17,9 @@ export function Input({ label, id, type = "text", ...props }: InputProps) {
       <input
         id={id}
         type={type}
-        className="h-11 w-full rounded border border-line bg-white px-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret"
+        aria-describedby={describedBy}
+        aria-invalid={invalid || undefined}
+        className="h-11 w-full rounded border border-edge bg-paper px-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-claret aria-invalid:border-claret"
         {...props}
       />
     </div>
