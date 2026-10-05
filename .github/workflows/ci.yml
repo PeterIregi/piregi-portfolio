@@ -33,6 +33,15 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      # Neither of these needs a database or any env var: both parse
+      # src/app/globals.css, so a renamed or deleted colour token fails here
+      # rather than shipping as a class that compiles to nothing.
+      - name: Check colour tokens resolve
+        run: pnpm check:classes
+
+      - name: Check contrast
+        run: pnpm check:contrast
+
       # No DATABASE_URL here on purpose: nothing in the app should need a
       # live database to compile or render. If a build fails for want of
       # env vars, that is a real finding, not something to paper over with
