@@ -305,6 +305,22 @@ Auth.js infers a trusted host from the platform's own variable (Vercel sets
 `VERCEL=1`) and Render sets nothing it recognises, so without it every
 `/api/auth/*` request fails with `UntrustedHost`. `render.yaml` sets it.
 
+The service runs on Render's `free` compute plan, which constrains the deploy
+workflow in a way that matters for reliability: there is no `preDeployCommand`,
+no Shell access, and no one-off jobs, so migrations and seeding cannot run in
+the service and are run from a developer machine against the production
+database instead (`DEPLOYMENT.md` §5). That means a schema change is not gated
+by the deploy — nothing stops a deploy shipping against a database the
+migrations have not caught up with. A paid plan makes
+`preDeployCommand: pnpm db:migrate` available, which closes the gap by
+aborting the release when a migration fails. `render.yaml` therefore keeps the
+`plan:` field and DEPLOYMENT.md §0 documents what the free tier does and does
+not support, so the two cannot drift without it being visible.
+
+`healthCheckPath: /` is set for the same reason. Without a health check, a
+deploy that builds successfully but fails on every request — as happened when
+the service had no `DATABASE_URL` — is still reported as a success (#103).
+
 ## 9. Observability
 
 - **Must not fail silently:** the contact-notification email (a thrown

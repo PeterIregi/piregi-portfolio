@@ -1,6 +1,16 @@
-# Render Blueprint. Apply with: Render dashboard -> New -> Blueprint -> this repo.
-# Secrets (sync: false) are prompted for at apply time and stored encrypted in
-# Render; never commit real values here.
+# Render Blueprint. This file is the single source of truth for the
+# `piregi-portfolio` web service's configuration.
+#
+# Applying it via Render dashboard -> New -> Blueprint adopts the existing
+# service: Render matches resources by `name`, so the service created in the
+# dashboard on srv-db2465ei0phs73d7mnp0 is configured from here rather than
+# replaced. Do not create a second service for this repo — Render's docs are
+# explicit that a resource should belong to at most one Blueprint, and two
+# services would fight over the same name.
+#
+# Secrets are never committed here. `sync: false` prompts for them in the
+# dashboard on first apply; Render preserves any existing value thereafter, so
+# the prompt does not reappear on later syncs (#103).
 #
 # Build and start commands assume Render's native Node runtime, not a
 # Dockerfile: it installs dependencies and leaves node_modules in place, so
@@ -11,24 +21,49 @@ services:
   - type: web
     name: piregi-portfolio
     runtime: node
-    plan: starter
+
+    # Free: 0.1 CPU, 512 MB. Not a production-grade plan — see the
+    # limitations in DEPLOYMENT.md §1 before putting real traffic here. The
+    # first version of this file said `starter`, which would have quietly moved
+    # the service onto a paid plan on the next sync (#103).
+    plan: free
+
     # Change to the region your Supabase production project sits in. This
     # matters: the app opens a Postgres connection per cold start, so a
     # cross-region deploy pays that latency on every request that needs data.
+    # Render cannot change a service's region after creation, so this has to
+    # match what the service was created with, not what would be ideal now.
     region: oregon
+
     branch: main
     repo: https://github.com/PeterIregi/piregi-portfolio
-    # corepack first: package.json pins pnpm@12.5.1 and the build must use
-    # that exact version or the lockfile is resolved differently.
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
-    startCommand: pnpm start
+
+    # Kept verbatim from the live service, which builds successfully without
+    # `corepack enable`. package.json pins pnpm@12.5.1 and Render's Node
+    # runtime resolves that pin without help. Changing a working build command
+    # to satisfy a config file is a regression risk with nothing to gain.
+    buildCommand: pnpm install --frozen-lockfile && pnpm run build
+    startCommand: pnpm run start
+
+    # Without this, a deploy that builds fine but 500s on every request is
+    # still reported as successful: Render had nothing to probe, which is
+    # exactly how a missing DATABASE_URL reached production unnoticed (#103).
     healthCheckPath: /
-    autoDeploy: true
-    # Only available on paid plans. Runs after the build succeeds and before
-    # the new version goes live, so a failed migration leaves the previous
-    # deploy serving. On the free plan, delete this line and run migrations
-    # from a one-off job or the shell (see DEPLOYMENT.md step 5).
-    preDeployCommand: pnpm db:migrate
+
+    # `autoDeploy` is deprecated in favour of this field; `checksPass` would
+    # additionally gate deploys on ci.yml passing.
+    autoDeployTrigger: commit
+
+    # No preDeployCommand. It is not available on the free compute plan, so
+    # `pnpm db:migrate` cannot run here. Migrations and seeding run from a
+    # local machine against the production database instead — free web
+    # services have neither Shell access nor one-off jobs, so there is no
+    # in-service path at all. DEPLOYMENT.md §5 has the commands.
+    #
+    # Upgrading to a paid plan is what makes this worth adding back: it would
+    # then run after the build and before the new version goes live, so a
+    # failed migration leaves the previous deploy serving.
+
     envVars:
       - key: NODE_VERSION
         value: "22"
@@ -36,9 +71,9 @@ services:
         value: "1"
       # Auth.js trusts the Host header only when this is set or when it
       # detects a known host platform. Vercel sets VERCEL=1, which is why
-      # this is absent from the old Vercel notes in .env.example; Render sets
-      # nothing Auth.js recognises, so without it every /api/auth/* request
-      # 500s with UntrustedHost and the admin login form appears broken.
+      # this was absent from the original Vercel notes; Render sets nothing
+      # Auth.js recognises, so without it every /api/auth/* request 500s with
+      # UntrustedHost and the admin login form appears broken.
       - key: AUTH_TRUST_HOST
         value: "true"
       # Canonical origin for sitemap.xml, robots.txt, JSON-LD and Open Graph.
@@ -46,18 +81,22 @@ services:
       # included, or social previews point at the wrong host.
       - key: NEXT_PUBLIC_SITE_URL
         sync: false
-      # openssl rand -base64 32
+      # Render generates this on first apply and does not overwrite an
+      # existing value on later syncs, so this stays stable across deploys.
       - key: AUTH_SECRET
         generateValue: true
+      # Supabase session pooler, not the direct connection: Render opens a
+      # connection per deploy and the transient pool exceeds Supabase's
+      # direct-connection limit. See DEPLOYMENT.md §1.
       - key: DATABASE_URL
         sync: false
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
-      # Both optional: without RESEND_API_KEY the mailer logs to console
-      # instead, and CONTACT_NOTIFY_EMAIL is the inbox that receives
-      # contact-form submissions.
+      # RESEND_API_KEY is optional: without it the mailer logs to console
+      # instead of sending, and CONTACT_NOTIFY_EMAIL is the inbox that
+      # receives contact-form submissions.
       - key: RESEND_API_KEY
         sync: false
       - key: CONTACT_NOTIFY_EMAIL
