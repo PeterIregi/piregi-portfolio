@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { mediaAssets } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import { deleteObject, uploadImage } from "@/lib/storage";
-import { validateImageFile } from "@/lib/validation/upload";
+import { imageDimensionsSchema, validateImageFile } from "@/lib/validation/upload";
 
 export async function GET() {
   try {
@@ -35,6 +35,29 @@ export async function POST(req: Request) {
 
     const validated = file as File;
     const altText = formData.get("altText");
+
+    // Dimensions are optional so a client that cannot decode the image still
+    // uploads it: the row then has no ratio and pages fall back to a
+    // hardcoded one. Present-but-unusable is still rejected rather than
+    // quietly stored, or a typo would become a silently broken aspect ratio.
+    const rawWidth = formData.get("width");
+    const rawHeight = formData.get("height");
+    const hasDimensions = rawWidth !== null && rawHeight !== null;
+    const parsedDimensions = hasDimensions
+      ? imageDimensionsSchema.safeParse({ width: rawWidth, height: rawHeight })
+      : null;
+    if (parsedDimensions && !parsedDimensions.success) {
+      return NextResponse.json(
+        {
+          error: `Image rejected: ${
+            parsedDimensions.error.issues[0]?.message ?? "invalid dimensions"
+          }`,
+        },
+        { status: 400 }
+      );
+    }
+    const dimensions = parsedDimensions?.success ? parsedDimensions.data : null;
+
     const { storagePath, publicUrl } = await uploadImage(validated);
 
     try {
@@ -46,6 +69,8 @@ export async function POST(req: Request) {
           altText: typeof altText === "string" && altText.trim() ? altText.trim() : null,
           mimeType: validated.type,
           sizeBytes: validated.size,
+          width: dimensions?.width ?? null,
+          height: dimensions?.height ?? null,
         })
         .returning();
 

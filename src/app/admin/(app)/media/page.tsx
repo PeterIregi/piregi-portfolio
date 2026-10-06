@@ -14,6 +14,8 @@ type ImageRow = {
   altText: string | null;
   mimeType: string;
   sizeBytes: number;
+  width: number | null;
+  height: number | null;
   uploadedAt: string;
 };
 
@@ -26,6 +28,26 @@ function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/**
+ * Intrinsic size, read here rather than from the file's bytes on the server
+ * because the browser can already decode every format in `ALLOWED_IMAGE_TYPES`,
+ * so this costs no dependency and no new parsing code to own (design.md §10).
+ *
+ * Returns null when the browser cannot decode the file. That is not a failed
+ * upload: the route treats dimensions as optional and the pages that render
+ * the image fall back to a hardcoded ratio (#90).
+ */
+async function readImageSize(file: File) {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const size = { width: bitmap.width, height: bitmap.height };
+    bitmap.close();
+    return size;
+  } catch {
+    return null;
+  }
 }
 
 export default function AdminMediaPage() {
@@ -66,6 +88,11 @@ export default function AdminMediaPage() {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("altText", altText);
+    const size = await readImageSize(file);
+    if (size) {
+      formData.append("width", String(size.width));
+      formData.append("height", String(size.height));
+    }
 
     try {
       const res = await fetch("/api/admin/media", { method: "POST", body: formData });

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { MediaFrame } from "@/components/ui/media-frame";
 import { listPublishedProjects } from "@/lib/db/queries/public";
 import { siteUrl } from "@/lib/site-url";
 import { StructuredData, breadcrumbSchema } from "@/components/site/structured-data";
@@ -38,7 +39,12 @@ export default async function ProjectsPage() {
           {projects.map((project) => (
             <article key={project.id}>
               {project.coverUrl && (
-                <div className="relative aspect-[3/2] w-full">
+                <MediaFrame
+                  width={project.coverWidth}
+                  height={project.coverHeight}
+                  fallback="3 / 2"
+                  className="w-full"
+                >
                   <Image
                     src={project.coverUrl}
                     alt={project.coverAltText ?? ""}
@@ -46,7 +52,7 @@ export default async function ProjectsPage() {
                     sizes="(min-width: 768px) 50vw, 100vw"
                     className="rounded-lg object-cover"
                   />
-                </div>
+                </MediaFrame>
               )}
               <h2 className="mt-5 font-display text-2xl text-ink">
                 {/* The title is the link: no arrow-suffixed button on every

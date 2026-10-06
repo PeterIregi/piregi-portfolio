@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Container } from "@/components/ui/container";
+import { MediaFrame } from "@/components/ui/media-frame";
 import {
   getSiteSettings,
   listSkills,
@@ -44,7 +45,12 @@ export default async function AboutPage() {
           </p>
         </div>
         {bioPhoto && (
-          <div className="w-full md:w-1/3 flex-shrink-0 relative aspect-square">
+          <MediaFrame
+            width={bioPhoto.width}
+            height={bioPhoto.height}
+            fallback="1 / 1"
+            className="w-full md:w-1/3 flex-shrink-0"
+          >
             <Image
               src={bioPhoto.publicUrl}
               alt={bioPhoto.altText ?? settings.brand?.name ?? "Portrait"}
@@ -53,7 +59,7 @@ export default async function AboutPage() {
               sizes="(min-width: 768px) 33vw, 100vw"
               className="rounded-lg object-cover"
             />
-          </div>
+          </MediaFrame>
         )}
       </header>
 
