@@ -21,10 +21,11 @@ set -a
 source "$ENV_FILE"
 set +a
 
-# Local runs need this; production does not. Auth.js derives the trusted host
-# from VERCEL=1 on Vercel, but a bare `next start` has nothing to derive it
-# from, so every /api/auth/* endpoint 500s with UntrustedHost and the smoke
-# test reports a failing login against a perfectly healthy deploy (#83).
+# A bare `next start` has nothing for Auth.js to infer a trusted host from, so
+# every /api/auth/* endpoint 500s with UntrustedHost and the smoke test reports
+# a failing login against a perfectly healthy deploy (#83). Render sets no
+# platform variable Auth.js recognises either, which is why render.yaml sets
+# this in production as well.
 export AUTH_TRUST_HOST="${AUTH_TRUST_HOST:-true}"
 
 # Validate required vars
@@ -70,4 +71,4 @@ fi
 
 echo
 echo "=== Deployment test complete ==="
-echo "If all checks passed, you're ready to deploy to Vercel."
+echo "If all checks passed, you're ready to push to main and let Render deploy."

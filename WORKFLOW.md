@@ -156,10 +156,12 @@ Per design.md §10: Tailwind theme with type scale, color tokens, and
 spacing; Button/Input/Container primitives consuming tokens only. No
 component-specific hex values.
 
-**#4: Configure Vercel project with env scoping**
-Attach the repo to Vercel with preview and production environments;
-scope `DATABASE_URL`, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY` to
-production only per design.md §8.
+**#4: Configure the Render service from the Blueprint**
+Apply `render.yaml` as a Blueprint and fill in the prompted secrets.
+Production credentials live only on that service per design.md §8; there is
+no preview deploy that could reach them. Migrations run via
+`preDeployCommand` (`pnpm db:migrate`), and `DEPLOYMENT.md` covers the seed
+and the `pnpm db:check` verification.
 
 ### Milestone 2: Auth & Data Foundation
 

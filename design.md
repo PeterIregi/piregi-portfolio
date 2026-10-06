@@ -12,7 +12,7 @@ decisions). Process lives in [`WORKFLOW.md`](./WORKFLOW.md).
 | Layer | Choice | Why |
 |---|---|---|
 | Framework | Next.js (App Router, TypeScript), full-stack | PRD §7 requires SSR/SSG for SEO and PRD §8 suggests Next.js; Server Components render public pages, Server Actions + route handlers cover admin CRUD and forms, so there is no separate API to deploy (owner's stack answer, Sep 2026) |
-| Hosting | Vercel | Native Next.js deploys, preview deploys per PR branch, env scoping between preview and production (owner's answer; matches PRD §8) |
+| Hosting | Render (native Node runtime, Blueprint) | Builds and serves Next.js from `main` with env set once per service rather than per environment, and keeps DB/storage on Supabase so only the web tier moves (owner's answer, superseding the earlier Vercel choice; matches PRD §8). Cost and long build times are the trade-off against Vercel's per-PR previews. `render.yaml` is the source of truth for the build/start commands and env var keys |
 | Database | Supabase Postgres, accessed through Drizzle ORM | Managed backups satisfy PRD §7 reliability; one vendor for DB and file storage; Drizzle gives typed queries and SQL migrations that work from Server Actions (owner's answer) |
 | File storage | Supabase Storage | CV PDFs and project images (PRD §4.3, §6); CV bucket is private and served only through the counting endpoint, image bucket is public (see §4, §5) |
 | Auth | Auth.js (NextAuth v5), credentials provider, bcrypt hashes, JWT session cookies | PRD §4.2 requires email/password login, session management, and password reset; Auth.js was the owner's pick and leaves an OAuth provider slot open for the optional SSO later |
@@ -288,14 +288,22 @@ Two, plus local:
 | Env | DB / storage | Deploy |
 |---|---|---|
 | local | Supabase dev project (hosted; no local Supabase stack to run) | `pnpm dev` |
-| preview | Supabase dev project, same as local | Vercel preview deploy per PR branch |
-| production | Separate Supabase **production** project | Vercel production, `main` only |
+| preview | Supabase dev project, same as local | No hosted preview. CI (`.github/workflows/ci.yml`) lints, typechecks, and builds each push and PR; the browser-level scripts in `scripts/` run against a local build |
+| production | Separate Supabase **production** project | Render web service, `main` only, auto-deploy |
 
-Hard rule: production env vars (`DATABASE_URL`, `SUPABASE_URL`,
-`SUPABASE_SERVICE_ROLE_KEY`) are scoped to the Vercel production
-environment only. A preview deploy must never resolve to the production
-database; that is how a test migration or a deleted row becomes an
-outage (design intent behind PRD §7's reliability line).
+Hard rule: the production env vars (`DATABASE_URL`, `SUPABASE_URL`,
+`SUPABASE_SERVICE_ROLE_KEY`) exist only on the Render production service.
+There is no preview deploy that could resolve to them, which satisfies the
+intent behind this rule — a preview or a PR build must never reach the
+production database, since that is how a test migration or a deleted row
+becomes an outage (design intent behind PRD §7's reliability line). CI
+carries no database credentials at all, so the guarantee is structural
+rather than a scoping rule someone has to remember.
+
+`AUTH_TRUST_HOST=true` is required in production on Render, not only locally:
+Auth.js infers a trusted host from the platform's own variable (Vercel sets
+`VERCEL=1`) and Render sets nothing it recognises, so without it every
+`/api/auth/*` request fails with `UntrustedHost`. `render.yaml` sets it.
 
 ## 9. Observability
 
