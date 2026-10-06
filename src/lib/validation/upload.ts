@@ -59,3 +59,35 @@ export function validateImageFile(file: File | null): string | null {
   if (result.success) return null;
   return result.error.issues[0]?.message ?? "File rejected";
 }
+
+export const MAX_IMAGE_DIMENSION_PX = 20000;
+
+/**
+ * Intrinsic size sent alongside the image file, read from the file in the
+ * browser before upload (#90).
+ *
+ * The bounds are a sanity rail, not a security boundary, and deliberately so:
+ * the upload route is already behind `requireAdmin()`, and these two numbers
+ * only pick an aspect ratio for `next/image`, so a wrong value is a wrong
+ * crop rather than any kind of access. Rejecting implausible values still
+ * matters because a stray zero or a typo'd five-digit number would render a
+ * page at an absurd ratio.
+ *
+ * Both values or neither: a ratio needs both, and one on its own has no
+ * meaning. `coerce` turns the FormData strings into numbers and rejects
+ * anything non-numeric, so a hand-rolled request cannot store `NaN`.
+ */
+export const imageDimensionsSchema = z.object({
+  width: z.coerce
+    .number()
+    .int()
+    .min(1, `Width must be between 1 and ${MAX_IMAGE_DIMENSION_PX}px`)
+    .max(MAX_IMAGE_DIMENSION_PX, `Width must be between 1 and ${MAX_IMAGE_DIMENSION_PX}px`),
+  height: z.coerce
+    .number()
+    .int()
+    .min(1, `Height must be between 1 and ${MAX_IMAGE_DIMENSION_PX}px`)
+    .max(MAX_IMAGE_DIMENSION_PX, `Height must be between 1 and ${MAX_IMAGE_DIMENSION_PX}px`),
+});
+
+export type ImageDimensions = z.infer<typeof imageDimensionsSchema>;

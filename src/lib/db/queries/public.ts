@@ -42,7 +42,12 @@ export async function getBioPhoto() {
   if (!mediaId) return null;
 
   const [asset] = await db
-    .select({ publicUrl: mediaAssets.publicUrl, altText: mediaAssets.altText })
+    .select({
+      publicUrl: mediaAssets.publicUrl,
+      altText: mediaAssets.altText,
+      width: mediaAssets.width,
+      height: mediaAssets.height,
+    })
     .from(mediaAssets)
     .where(eq(mediaAssets.id, mediaId))
     .limit(1);
@@ -64,6 +69,8 @@ export async function listPublishedProjects() {
       // still lists instead of dropping out of the grid.
       coverUrl: mediaAssets.publicUrl,
       coverAltText: mediaAssets.altText,
+      coverWidth: mediaAssets.width,
+      coverHeight: mediaAssets.height,
     })
     .from(projects)
     .leftJoin(mediaAssets, eq(projects.coverMediaId, mediaAssets.id))
@@ -86,6 +93,8 @@ export async function getPublishedProjectBySlug(slug: string) {
       updatedAt: projects.updatedAt,
       coverUrl: mediaAssets.publicUrl,
       coverAltText: mediaAssets.altText,
+      coverWidth: mediaAssets.width,
+      coverHeight: mediaAssets.height,
     })
     .from(projects)
     .leftJoin(mediaAssets, eq(projects.coverMediaId, mediaAssets.id))
@@ -105,6 +114,8 @@ export async function listPublishedProjectGallery(projectId: string) {
       id: mediaAssets.id,
       publicUrl: mediaAssets.publicUrl,
       altText: mediaAssets.altText,
+      width: mediaAssets.width,
+      height: mediaAssets.height,
       position: projectGallery.position,
     })
     .from(projectGallery)

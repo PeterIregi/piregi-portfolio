@@ -110,6 +110,11 @@ async function seedMedia() {
       altText: asset.altText,
       mimeType: "image/png",
       sizeBytes: bytes.byteLength,
+      // The PNGs are generated at a known size, so the seed knows its ratios
+      // exactly. Recording them keeps the seeded public pages on the recorded
+      // ratio path (#90) instead of the MediaFrame fallback.
+      width: asset.width,
+      height: asset.height,
     });
     console.log(`  media ${asset.file} -> ${publicUrl}`);
   }

@@ -132,6 +132,13 @@ export const mediaAssets = pgTable("media_assets", {
   altText: text("alt_text"),
   mimeType: text("mime_type").notNull(),
   sizeBytes: integer("size_bytes").notNull(),
+  // Intrinsic size, read in the browser at upload and bounded in the upload
+  // route. Nullable because rows uploaded before #90 have no value, and an
+  // image with an unknown ratio still renders: callers fall back to a
+  // hardcoded ratio. Recorded per design.md §10 so `next/image` can reserve
+  // the right space without cropping every image to one shape.
+  width: integer("width"),
+  height: integer("height"),
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
