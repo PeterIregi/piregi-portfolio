@@ -183,7 +183,7 @@ the action/handler is the check.
 | `projects` (draft) | No | No | Full CRUD |
 | `experiences`, `skills`, `testimonials`, about/bio content | Yes, via public queries | No | Full CRUD |
 | `site_settings` | Yes (nav socials, meta need it to render) | No | Write via `/admin/settings` |
-| `media_assets` (image bucket) | Yes, images are meant to be seen | No | Upload/delete |
+| `media_assets` (image bucket) | Yes, images are meant to be seen; `width`/`height` are public read so pages can size an image without a hardcoded ratio (§10) | No | Upload/delete |
 | CV file bytes | Yes, but only through `GET /api/cv/download`, which also increments the counter; the CV storage bucket is **private** | No | Upload/activate/revert/delete |
 | `cv_files` metadata (list, counts) | Only `getActiveCv()` fields needed for the CV page (id, date) | No | Full list in `/admin/cv` |
 | `contact_submissions` | No | Insert only via the contact Server Action (Zod validation + honeypot + rate limit, PRD §4.1/§7) | Read, set status, delete |
@@ -349,15 +349,26 @@ constraints it works within:
     all, so a host read from the environment would break every preview
     and CI build. The pathname is what keeps the allowlist from
     becoming a general-purpose image proxy. Never widen the pathname.
-  - `media_assets` has no intrinsic width/height columns (§2), so
-    images are rendered `fill` inside a `relative` parent that already
-    fixes the aspect ratio, with an accurate `sizes`. That reserves the
-    layout space before the bytes arrive, so no image shifts layout.
-    It also means the parent has to fix the ratio: `fill` against an
-    auto-height parent collapses to zero. The project gallery plates
-    are pinned to 3:2 for that reason, so a non-3:2 screenshot is
-    cropped by `object-cover`. Capturing real dimensions at upload is
-    the durable fix (#90) and supersedes this when it lands.
+  - Images are rendered `fill` inside `MediaFrame`
+    (`components/ui/media-frame.tsx`), which sets the aspect ratio from the
+    asset's recorded `media_assets.width`/`height` with an accurate `sizes`.
+    That reserves the layout space before the bytes arrive, so no image
+    shifts layout, and it means the parent fixes the ratio: `fill` against
+    an auto-height parent collapses to zero.
+  - Intrinsic dimensions are read in the **browser** at upload and bounded
+    in `src/lib/validation/upload.ts`; the server does not parse image
+    bytes. The browser has already decoded the image, so this costs no
+    dependency and covers every type in `ALLOWED_IMAGE_TYPES`. The bounds
+    are a sanity rail rather than a security boundary, and deliberately
+    so: the route is behind `requireAdmin()` (§4) and two integers only
+    pick an aspect ratio. Both columns are **nullable** — a row with no
+    recorded size still renders, on its `MediaFrame` fallback, which is why
+    the fallback is load-bearing rather than cosmetic.
+  - The ratio is an inline `aspect-ratio`, not a Tailwind class: a
+    per-asset ratio cannot be a build-time literal. Shapes that are
+    deliberate rather than photographic stay fixed and do not use the
+    recorded ratio — the testimonial avatar circle and the admin media
+    thumbnail height.
   - `priority` is for the LCP image of a route, and at most one per
     route: the About bio photo (the LCP element #88 measured) and
     the project detail cover (the largest image in that route's

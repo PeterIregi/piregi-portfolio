@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { MediaFrame } from "@/components/ui/media-frame";
 import { Button } from "@/components/ui/button";
 import {
   getSiteSettings,
@@ -72,7 +73,12 @@ export default async function HomePage() {
               {featured.map((project) => (
                 <article key={project.id}>
                   {project.coverUrl ? (
-                    <div className="relative aspect-[3/2] w-full">
+                    <MediaFrame
+                      width={project.coverWidth}
+                      height={project.coverHeight}
+                      fallback="3 / 2"
+                      className="w-full"
+                    >
                       <Image
                         src={project.coverUrl}
                         alt={project.coverAltText ?? ""}
@@ -80,7 +86,7 @@ export default async function HomePage() {
                         sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                         className="rounded-lg object-cover"
                       />
-                    </div>
+                    </MediaFrame>
                   ) : (
                     <div aria-hidden="true" className="aspect-[3/2] w-full rounded-lg bg-shell" />
                   )}

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
+import { MediaFrame } from "@/components/ui/media-frame";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import {
@@ -119,15 +120,21 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       </Container>
 
       {project.coverUrl && (
-        <Container className="relative aspect-[3/2]">
-          <Image
-            src={project.coverUrl}
-            alt={project.coverAltText ?? ""}
-            fill
-            priority
-            sizes="(min-width: 1152px) 1152px, 100vw"
-            className="rounded-lg object-cover"
-          />
+        <Container>
+          <MediaFrame
+            width={project.coverWidth}
+            height={project.coverHeight}
+            fallback="3 / 2"
+          >
+            <Image
+              src={project.coverUrl}
+              alt={project.coverAltText ?? ""}
+              fill
+              priority
+              sizes="(min-width: 1152px) 1152px, 100vw"
+              className="rounded-lg object-cover"
+            />
+          </MediaFrame>
         </Container>
       )}
 
@@ -166,9 +173,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <h2 className="font-display text-2xl text-ink">Screens</h2>
           <div className="mt-6 grid gap-6 sm:grid-cols-2">
             {plates.map((plate, index) => (
-              <figure
+              <MediaFrame
                 key={plate.id}
-                className={`relative aspect-[3/2] ${index === 0 ? "sm:col-span-2" : ""}`}
+                as="figure"
+                width={plate.width}
+                height={plate.height}
+                fallback="3 / 2"
+                className={index === 0 ? "sm:col-span-2" : ""}
               >
                 <Image
                   src={plate.publicUrl}
@@ -177,7 +188,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   sizes="(min-width: 640px) 66vw, 100vw"
                   className="rounded-lg border border-line object-cover"
                 />
-              </figure>
+              </MediaFrame>
             ))}
           </div>
         </Container>
