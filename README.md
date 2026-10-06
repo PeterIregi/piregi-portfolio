@@ -13,7 +13,8 @@ CV (prd.md §1).
 - Auth.js (credentials, email/password) for the admin
 - Resend for contact notifications and password reset
 - Tailwind CSS with project-defined design tokens
-- Deployed on Vercel; dev + production Supabase projects
+- Deployed on Render (native Node runtime, Blueprint in `render.yaml`); dev +
+  production Supabase projects. See [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 Full reasoning behind every choice is in `design.md` §1.
 
@@ -53,9 +54,14 @@ with `UntrustedHost`, submitting the login form lands on `/api/auth/error`, and
 `/admin/login` looks broken for reasons unrelated to whatever you just changed
 (#83). `.env.example` sets the variable; `scripts/deploy-test.sh` exports it for
 the same reason, so the smoke test doesn't report a failing login against a
-healthy deploy. Production does not need it — Vercel sets `VERCEL=1`, and
-Auth.js infers the trusted host from that — which is why
-`.env.production.example` deliberately omits it (design.md §8).
+healthy deploy.
+
+It is equally required in production on Render. Vercel set `VERCEL=1` and
+Auth.js infers a trusted host from that, which is why the original
+deployment notes omitted the variable; Render sets nothing Auth.js recognises,
+so without `AUTH_TRUST_HOST=true` every `/api/auth/*` request 500s and
+`/admin/login` is broken in production. `render.yaml` and
+`.env.production.example` both set it (design.md §8).
 
 One environment-specific database note: Supabase's connection pooler hostname is
 unreachable from networks where DNS64 synthesises `AAAA` records with no IPv6
@@ -108,9 +114,9 @@ Both projects exist, each with the `cv-images` (public) and `cv-files`
 | production | `piregi-portfolio-prod` | `jjmpltxgwonijnrjjzhd` |
 
 Both are in `us-east-1`. Database passwords are in the Supabase dashboard
-and are not committed to this repo. Production keys go into Vercel env vars
-when that project is configured; nothing secret belongs in `.env.local`
-beyond the dev project.
+and are not committed to this repo. Production keys go into the Render
+service's environment (declared in `render.yaml`, prompted for at Blueprint
+apply time); nothing secret belongs in `.env.local` beyond the dev project.
 
 ### Checks
 
