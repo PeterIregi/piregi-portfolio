@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireAdmin, isUnauthorized, unauthorizedResponse } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { contactSubmissions, cvFiles, pageViews } from "@/lib/db/schema";
 import { count, desc, sql } from "drizzle-orm";
@@ -36,6 +36,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error("admin overview error:", error);
+    if (isUnauthorized(error)) return unauthorizedResponse();
     return NextResponse.json({ error: "Failed to fetch overview" }, { status: 500 });
   }
 }

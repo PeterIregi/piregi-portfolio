@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireAdmin, isUnauthorized, unauthorizedResponse } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { projects } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -37,6 +37,7 @@ export async function POST(req: Request) {
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
     console.error("create project error:", error);
+    if (isUnauthorized(error)) return unauthorizedResponse();
     return NextResponse.json({ error: "Failed to create project" }, { status: 500 });
   }
 }
