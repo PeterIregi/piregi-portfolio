@@ -25,7 +25,7 @@ export function SettingsForm({ initial }: { initial: SettingsValues }) {
   const [github, setGithub] = useState(initial.socials.github);
   const [linkedin, setLinkedin] = useState(initial.socials.linkedin);
   const [email, setEmail] = useState(initial.socials.email);
-  const [photoMediaId, setPhotoMediaId] = useState((initial as any).bio?.photoMediaId ?? "");
+  const [photoMediaId, setPhotoMediaId] = useState(initial.bio?.photoMediaId ?? "");
 
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
