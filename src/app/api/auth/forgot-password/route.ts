@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { hash } from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 import { siteUrl } from "@/lib/site-url";
+import { checkPasswordResetRequestRateLimit, retryAfterSeconds } from "@/lib/auth/rate-limit";
 
 export async function POST(req: Request) {
   try {
@@ -13,6 +14,17 @@ export async function POST(req: Request) {
 
     if (!email || !email.includes("@")) {
       return NextResponse.json({ error: "Valid email required" }, { status: 400 });
+    }
+
+    // Throttle before the user lookup so the limiter also covers the
+    // enumeration guard's happy path (#98).
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+    const limit = checkPasswordResetRequestRateLimit(email, ip);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Try again later.", retryAfter: retryAfterSeconds(limit.resetAt) },
+        { status: 429 }
+      );
     }
 
     const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);

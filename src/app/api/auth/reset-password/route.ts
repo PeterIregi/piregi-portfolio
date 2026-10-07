@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { passwordResetTokens, users } from "@/lib/db/schema";
 import { eq, and, gt, isNull } from "drizzle-orm";
 import { hash } from "bcryptjs";
+import { checkResetPasswordAttemptRateLimit, retryAfterSeconds } from "@/lib/auth/rate-limit";
 
 export async function POST(req: Request) {
   try {
@@ -16,6 +17,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
     }
 
+    // No more than a handful of submissions per IP per window, so an
+    // attacker cannot brute-force a token offline (#98).
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+    const limit = checkResetPasswordAttemptRateLimit(ip);
+    if (!limit.allowed) {
+      return NextResponse.json(
+        { error: "Too many attempts. Try again later.", retryAfter: retryAfterSeconds(limit.resetAt) },
+        { status: 429 }
+      );
+    }
+
     const now = new Date();
 
     // Fetch all unexpired, unused tokens and check hash in memory
@@ -25,7 +37,13 @@ export async function POST(req: Request) {
       .where(and(gt(passwordResetTokens.expiresAt, now), isNull(passwordResetTokens.usedAt)));
 
     const { compare } = await import("bcryptjs");
-    const validToken = candidates.find((t) => compare(token, t.tokenHash));
+    let validToken = null;
+    for (const candidate of candidates) {
+      if (await compare(token, candidate.tokenHash)) {
+        validToken = candidate;
+        break;
+      }
+    }
 
     if (!validToken) {
       return NextResponse.json({ error: "Invalid or expired token" }, { status: 400 });
