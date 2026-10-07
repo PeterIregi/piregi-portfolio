@@ -46,9 +46,10 @@ services:
     startCommand: pnpm run start
 
     # Without this, a deploy that builds fine but 500s on every request is
-    # still reported as successful: Render had nothing to probe, which is
-    # exactly how a missing DATABASE_URL reached production unnoticed (#103).
-    healthCheckPath: /
+    # still reported as successful: Render had nothing to probe. Use a lightweight
+    # health endpoint that does not hit the database to avoid false failures
+    # on cold starts.
+    healthCheckPath: /api/health
 
     # `autoDeploy` is deprecated in favour of this field; `checksPass` would
     # additionally gate deploys on ci.yml passing.
