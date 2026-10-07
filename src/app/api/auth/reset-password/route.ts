@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { passwordResetTokens, users } from "@/lib/db/schema";
-import { eq, and, gt, isNull } from "drizzle-orm";
+import { eq, and, gt, isNull, sql } from "drizzle-orm";
 import { hash } from "bcryptjs";
 
 export async function POST(req: Request) {
@@ -34,11 +34,17 @@ export async function POST(req: Request) {
     const passwordHash = await hash(password, 10);
 
     await db.transaction(async (tx) => {
-      await tx.update(users).set({ passwordHash }).where(eq(users.id, validToken.userId));
+      // Keep a reset from leaving other issuance alive: all of the user's
+      // reset tokens are spent, and the token version bumps so every
+      // session signed before this reset stops validating (#97).
+      await tx
+        .update(users)
+        .set({ passwordHash, tokenVersion: sql`${users.tokenVersion} + 1` })
+        .where(eq(users.id, validToken.userId));
       await tx
         .update(passwordResetTokens)
         .set({ usedAt: new Date() })
-        .where(eq(passwordResetTokens.id, validToken.id));
+        .where(eq(passwordResetTokens.userId, validToken.userId));
     });
 
     return NextResponse.json({ success: true });

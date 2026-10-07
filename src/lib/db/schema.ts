@@ -21,6 +21,11 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   name: text("name"),
   role: text("role").notNull().default("admin"),
+  // Incremented on password reset so every session minted before it stops
+  // validating (design.md §4: sessions are revoked on credential change).
+  // The JWT stores the version it was signed with and the session callback
+  // compares it against this column on each request (#97).
+  tokenVersion: integer("token_version").notNull().default(0),
   lastLogin: timestamp("last_login", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
