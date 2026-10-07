@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireAdmin, isUnauthorized, unauthorizedResponse } from "@/lib/auth/guards";
 import { insertActiveCv } from "@/lib/db/cv";
 import { deleteObject, uploadCv } from "@/lib/storage";
 import { validateCvFile } from "@/lib/validation/upload";
@@ -29,6 +29,7 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     console.error("CV upload error:", error);
+    if (isUnauthorized(error)) return unauthorizedResponse();
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }

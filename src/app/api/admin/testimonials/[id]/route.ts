@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireAdmin, isUnauthorized, unauthorizedResponse } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { testimonials } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -14,6 +14,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json(t);
   } catch (error) {
     console.error("get testimonial error:", error);
+    if (isUnauthorized(error)) return unauthorizedResponse();
     return NextResponse.json({ error: "Failed to fetch testimonial" }, { status: 500 });
   }
 }
@@ -31,6 +32,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     return NextResponse.json(t);
   } catch (error) {
     console.error("update testimonial error:", error);
+    if (isUnauthorized(error)) return unauthorizedResponse();
     return NextResponse.json({ error: "Failed to update testimonial" }, { status: 500 });
   }
 }
@@ -43,6 +45,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("delete testimonial error:", error);
+    if (isUnauthorized(error)) return unauthorizedResponse();
     return NextResponse.json({ error: "Failed to delete testimonial" }, { status: 500 });
   }
 }

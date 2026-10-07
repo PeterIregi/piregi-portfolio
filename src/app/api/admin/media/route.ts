@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireAdmin, isUnauthorized, unauthorizedResponse } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { mediaAssets } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
@@ -18,6 +18,7 @@ export async function GET() {
     return NextResponse.json(images);
   } catch (error) {
     console.error("list media error:", error);
+    if (isUnauthorized(error)) return unauthorizedResponse();
     return NextResponse.json({ error: "Failed to load images" }, { status: 500 });
   }
 }
@@ -83,6 +84,7 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     console.error("upload media error:", error);
+    if (isUnauthorized(error)) return unauthorizedResponse();
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }

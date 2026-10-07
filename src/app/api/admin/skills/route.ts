@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireAdmin, isUnauthorized, unauthorizedResponse } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { skills } from "@/lib/db/schema";
 import { skillSchema } from "@/lib/validation/content";
@@ -18,6 +18,7 @@ export async function POST(req: Request) {
     return NextResponse.json(skill, { status: 201 });
   } catch (error) {
     console.error("create skill error:", error);
+    if (isUnauthorized(error)) return unauthorizedResponse();
     return NextResponse.json({ error: "Failed to create skill" }, { status: 500 });
   }
 }
