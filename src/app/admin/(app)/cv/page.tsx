@@ -3,14 +3,20 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { requireAdmin } from "@/lib/auth/guards";
 import { listCvs } from "@/lib/db/cv";
+import { activateCvAction, deleteCvAction } from "@/actions/cv";
 
 export const metadata = {
   title: "CV Management | Admin",
 };
 
-export default async function AdminCvPage() {
+export default async function AdminCvPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ activated?: string; deleted?: string; uploaded?: string; error?: string }>;
+}) {
   await requireAdmin();
   const cvs = await listCvs();
+  const { activated, deleted, uploaded, error } = await searchParams;
 
   return (
     <Container className="py-8">
@@ -21,6 +27,30 @@ export default async function AdminCvPage() {
         </div>
         <Button variant="primary" href="/admin/cv/upload">Upload New CV</Button>
       </header>
+
+      {uploaded !== undefined && (
+        <div className="mb-6 p-4 rounded border border-graphite bg-shell text-graphite text-sm">
+          CV uploaded and set active.
+        </div>
+      )}
+      {activated !== undefined && (
+        <div className="mb-6 p-4 rounded border border-graphite bg-shell text-graphite text-sm">
+          CV activated. It is now the published version.
+        </div>
+      )}
+      {deleted !== undefined && (
+        <div className="mb-6 p-4 rounded border border-graphite bg-shell text-graphite text-sm">
+          CV deleted.
+        </div>
+      )}
+      {error !== undefined && (
+        <div
+          role="alert"
+          className="mb-6 p-4 rounded border border-accent bg-accent/10 text-accent text-sm"
+        >
+          {error}
+        </div>
+      )}
 
       {cvs.length === 0 ? (
         <div className="bg-shell rounded-lg p-12 text-center">
@@ -60,7 +90,7 @@ export default async function AdminCvPage() {
                   </td>
                   <td className="px-4 py-3 text-right whitespace-nowrap">
                     {!cv.isActive && (
-                      <form action={`/api/admin/cv/${cv.id}/activate`} method="POST" className="inline">
+                      <form action={activateCvAction.bind(null, cv.id)} className="inline">
                         <button
                           type="submit"
                           className="text-accent hover:text-accent-deep font-medium mr-3"
@@ -70,7 +100,7 @@ export default async function AdminCvPage() {
                       </form>
                     )}
                     {!cv.isActive && (
-                      <form action={`/api/admin/cv/${cv.id}/delete`} method="POST" className="inline">
+                      <form action={deleteCvAction.bind(null, cv.id)} className="inline">
                         <button
                           type="submit"
                           className="text-graphite hover:text-accent font-medium"
