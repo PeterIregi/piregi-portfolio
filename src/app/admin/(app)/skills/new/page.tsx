@@ -11,7 +11,7 @@ export default function NewSkillPage() {
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
-  const [proficiency, setProficiency] = useState(0);
+  const [proficiency, setProficiency] = useState("");
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -24,7 +24,12 @@ export default function NewSkillPage() {
       const res = await fetch("/api/admin/skills", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, category, proficiency }),
+        body: JSON.stringify({
+          name,
+          category,
+          // Optional: omit when blank so the row stores NULL.
+          ...(proficiency === "" ? {} : { proficiency: Number(proficiency) }),
+        }),
       });
 
       if (!res.ok) {
@@ -52,7 +57,7 @@ export default function NewSkillPage() {
 
         <Input label="Name" id="name" name="name" type="text" value={name} onChange={e => setName(e.target.value)} required />
         <Input label="Category" id="category" name="category" type="text" value={category} onChange={e => setCategory(e.target.value)} required />
-        <Input label="Proficiency (1-5)" id="proficiency" name="proficiency" type="number" min={1} max={5} value={proficiency} onChange={e => setProficiency(Number(e.target.value))} required />
+        <Input label="Proficiency (1-5, optional)" id="proficiency" name="proficiency" type="number" min={1} max={5} value={proficiency} onChange={e => setProficiency(e.target.value)} />
 
         <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
           {loading ? "Creating…" : "Create Skill"}

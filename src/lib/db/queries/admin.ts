@@ -45,6 +45,21 @@ export async function listAllTestimonials() {
   return db.select().from(testimonials).orderBy(testimonials.sortOrder);
 }
 
+export async function getExperienceById(id: string) {
+  const [row] = await db.select().from(experiences).where(eq(experiences.id, id)).limit(1);
+  return row ?? null;
+}
+
+export async function getSkillById(id: string) {
+  const [row] = await db.select().from(skills).where(eq(skills.id, id)).limit(1);
+  return row ?? null;
+}
+
+export async function getTestimonialById(id: string) {
+  const [row] = await db.select().from(testimonials).where(eq(testimonials.id, id)).limit(1);
+  return row ?? null;
+}
+
 export async function listAllMediaAssets() {
   return db.select().from(mediaAssets).orderBy(desc(mediaAssets.uploadedAt));
 }
