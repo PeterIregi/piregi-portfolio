@@ -28,6 +28,9 @@ export default async function SettingsPage() {
           linkedin: settings.socials?.linkedin ?? "",
           email: settings.socials?.email ?? "",
         },
+        bio: {
+          photoMediaId: settings.bio?.photoMediaId ?? "",
+        },
       }}
     />
   );

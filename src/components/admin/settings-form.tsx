@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { MediaPicker } from "@/components/admin/media-picker";
 
 export type SettingsValues = {
   brand: { name: string; tagline: string };
   meta: { title: string; description: string; ogImage: string };
   socials: { github: string; linkedin: string; email: string };
+  bio?: { photoMediaId?: string | null };
 };
 
 export function SettingsForm({ initial }: { initial: SettingsValues }) {
@@ -23,6 +25,7 @@ export function SettingsForm({ initial }: { initial: SettingsValues }) {
   const [github, setGithub] = useState(initial.socials.github);
   const [linkedin, setLinkedin] = useState(initial.socials.linkedin);
   const [email, setEmail] = useState(initial.socials.email);
+  const [photoMediaId, setPhotoMediaId] = useState((initial as any).bio?.photoMediaId ?? "");
 
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -42,6 +45,7 @@ export function SettingsForm({ initial }: { initial: SettingsValues }) {
           brand: { name, tagline },
           meta: { title: metaTitle, description: metaDescription, ogImage },
           socials: { github, linkedin, email },
+          bio: { photoMediaId: photoMediaId || null },
         }),
       });
 
@@ -150,6 +154,16 @@ export function SettingsForm({ initial }: { initial: SettingsValues }) {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+        </section>
+
+        <section>
+          <h2 className="font-display text-xl text-ink mb-6">Bio</h2>
+          <MediaPicker
+            value={photoMediaId}
+            onChange={setPhotoMediaId}
+            label="Bio Photo"
+            emptyMessage="No bio photo selected"
+          />
         </section>
 
         <div>

@@ -22,6 +22,10 @@ const optionalEmail = z.union([
   z.string().trim().email("Enter a valid email").max(200, "Must be 200 characters or fewer"),
 ]);
 
+const bioSchema = z.object({
+  photoMediaId: z.string().trim().uuid().nullable().or(z.literal("")),
+});
+
 export const settingsSchema = z.object({
   brand: z.object({
     name: optionalText(100),
@@ -37,6 +41,7 @@ export const settingsSchema = z.object({
     linkedin: optionalUrl,
     email: optionalEmail,
   }),
+  bio: bioSchema.optional(),
 });
 
 export type SettingsInput = z.infer<typeof settingsSchema>;

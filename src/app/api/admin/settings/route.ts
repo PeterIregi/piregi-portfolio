@@ -25,16 +25,17 @@ export async function PUT(req: Request) {
       );
     }
 
-    const { brand, meta, socials } = parsed.data;
+    const { brand, meta, socials, bio } = parsed.data;
 
-    // Only the three keys the admin owns are written. `bio` (the About photo)
-    // lives in the same key-value table and must survive a settings save.
+    // Write all editable keys; `bio` is included if provided.
     await db.transaction(async (tx) => {
-      for (const [key, value] of Object.entries({ brand, meta, socials })) {
-        await tx
-          .insert(siteSettings)
-          .values({ key, value })
-          .onConflictDoUpdate({ target: siteSettings.key, set: { value } });
+      for (const [key, value] of Object.entries({ brand, meta, socials, bio })) {
+        if (value !== undefined) {
+          await tx
+            .insert(siteSettings)
+            .values({ key, value })
+            .onConflictDoUpdate({ target: siteSettings.key, set: { value } });
+        }
       }
     });
 
