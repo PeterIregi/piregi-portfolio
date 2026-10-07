@@ -122,6 +122,12 @@ export default function ContactForm({ success }: Props) {
 
         <input type="hidden" name="hp" value="" tabIndex={-1} autoComplete="off" />
 
+        <p className="text-sm text-graphite">
+          By submitting this form, you agree to the processing of your personal information
+          for the purpose of responding to your message. I only keep what&apos;s necessary
+          to reply.
+        </p>
+
         <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
           {loading ? "Sending…" : "Send message"}
         </Button>
