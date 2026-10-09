@@ -3,19 +3,7 @@ import { requireAdmin, isUnauthorized, unauthorizedResponse } from "@/lib/auth/g
 import { db } from "@/lib/db";
 import { projects } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { z } from "zod";
-
-const projectSchema = z.object({
-  title: z.string().min(1).max(200),
-  slug: z.string().min(1).max(200).regex(/^[a-z0-9-]+$/),
-  summary: z.string().min(1).max(500),
-  description: z.string().min(1),
-  techStack: z.array(z.string()).default([]),
-  tags: z.array(z.string()).default([]),
-  projectUrl: z.string().url().optional().or(z.literal("")),
-  repoUrl: z.string().url().optional().or(z.literal("")),
-  status: z.enum(["draft", "published"]).default("draft"),
-});
+import { projectSchema } from "@/lib/validation/content";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {

@@ -32,3 +32,22 @@ export const testimonialSchema = z.object({
 });
 
 export type TestimonialInput = z.infer<typeof testimonialSchema>;
+
+/**
+ * Shared by the admin project create and [id] routes; the update route
+ * reuses it wholesale because both accept the same editable shape
+ * (AGENTS.md: one Zod schema per shape).
+ */
+export const projectSchema = z.object({
+  title: z.string().min(1).max(200),
+  slug: z.string().min(1).max(200).regex(/^[a-z0-9-]+$/),
+  summary: z.string().min(1).max(500),
+  description: z.string().min(1),
+  techStack: z.array(z.string()).default([]),
+  tags: z.array(z.string()).default([]),
+  projectUrl: z.string().url().optional().or(z.literal("")),
+  repoUrl: z.string().url().optional().or(z.literal("")),
+  status: z.enum(["draft", "published"]).default("draft"),
+});
+
+export type ProjectInput = z.infer<typeof projectSchema>;
