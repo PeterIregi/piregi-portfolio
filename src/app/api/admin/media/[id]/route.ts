@@ -39,6 +39,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json(asset);
   } catch (error) {
     console.error("update media alt text error:", error);
+    if (isUnauthorized(error)) return unauthorizedResponse();
     return NextResponse.json({ error: "Failed to update alt text" }, { status: 500 });
   }
 }
