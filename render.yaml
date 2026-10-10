@@ -77,6 +77,14 @@ services:
       # UntrustedHost and the admin login form appears broken.
       - key: AUTH_TRUST_HOST
         value: "true"
+      # Canonical origin for Authenti.js action URLs (login callbacks, the
+      # CredentialsSignin redirect). Without it, Auth.js builds the URL from
+      # x-forwarded-host, which Render's proxy reports as localhost:10000, so a
+      # successful admin sign-in redirects the browser to the visitor's own
+      # machine (#115). The value must match the served origin, scheme included,
+      # like NEXT_PUBLIC_SITE_URL above.
+      - key: AUTH_URL
+        value: "https://piregi-portfolio.onrender.com"
       # Canonical origin for sitemap.xml, robots.txt, JSON-LD and Open Graph.
       # Must match the domain the site is actually served from, scheme
       # included, or social previews point at the wrong host.

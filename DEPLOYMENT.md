@@ -117,6 +117,13 @@ recognises the host platform; Vercel sets `VERCEL=1` and Render sets nothing
 Auth.js knows about, so without it every `/api/auth/*` request fails with
 `UntrustedHost` and the admin login form looks broken.
 
+`AUTH_URL=https://<origin>` is set in the blueprint for a related reason.
+Render's proxy hands the app `x-forwarded-host: localhost:10000`, so without
+it Auth.js builds action URLs from that header and a sign-in redirects the
+browser to `localhost:10000/admin` instead of the real origin (#115). Keep
+it equal to `NEXT_PUBLIC_SITE_URL`. Auth.js leaves the `/api/auth` base path
+untouched when the URL's path is `/`.
+
 ### Auto-deploy
 
 `render.yaml` sets `autoDeployTrigger: commit`, so Render deploys every push to
