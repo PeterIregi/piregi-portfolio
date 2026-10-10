@@ -15,8 +15,8 @@ export function siteUrl(): string {
       // Trailing slash stripped so callers can safely append "/projects".
       return new URL(configured).origin;
     } catch {
-      console.warn("NEXT_PUBLIC_SITE_URL is not a valid URL; using piregi.dev");
+      console.warn("NEXT_PUBLIC_SITE_URL is not a valid URL; using piregi-portfolio.onrender.com");
     }
   }
-  return "https://piregi.dev";
+  return "https://piregi-portfolio.onrender.com";
 }
