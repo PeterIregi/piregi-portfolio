@@ -184,8 +184,9 @@ No existence disclosure in the response (design.md §4/§5).
 
 **#8: Implement requireAdmin and wire the admin auth boundary**
 `src/lib/auth/guards.ts` with `requireAdmin()`; call it in every admin
-Server Action established so far. `middleware.ts` redirects unauthenticated
-admin page visits for UX only (design.md §4, §6).
+mutation established so far (route handler or Server Action).
+`middleware.ts` redirects unauthenticated admin page visits for UX only
+(design.md §4, §6).
 
 **#9: Write the seed script**
 Sample projects, experience, skills, testimonials, settings, and the
