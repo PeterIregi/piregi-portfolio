@@ -231,4 +231,4 @@ On the free plan only the two most recent previous deploys can be rolled back.
 - [ ] `plan:` in `render.yaml` matches the service's actual compute plan
 - [ ] Admin password changed from the seeded default
 - [ ] TLS active on the custom domain
-- [ ] Health check green on `healthCheckPath: /`
+- [ ] Health check green on `healthCheckPath: /api/health`

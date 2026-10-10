@@ -11,13 +11,13 @@ decisions). Process lives in [`WORKFLOW.md`](./WORKFLOW.md).
 
 | Layer | Choice | Why |
 |---|---|---|
-| Framework | Next.js (App Router, TypeScript), full-stack | PRD §7 requires SSR/SSG for SEO and PRD §8 suggests Next.js; Server Components render public pages, Server Actions + route handlers cover admin CRUD and forms, so there is no separate API to deploy (owner's stack answer, Sep 2026) |
+| Framework | Next.js (App Router, TypeScript), full-stack | PRD §7 requires SSR/SSG for SEO and PRD §8 suggests Next.js; Server Components render public pages, route handlers under `app/api/` cover admin CRUD and the public POST surface, and Server Actions are used where a native `<form action>` fits better, so there is no separate backend to deploy (owner's stack answer, Sep 2026) |
 | Hosting | Render (native Node runtime, Blueprint) | Builds and serves Next.js from `main` with env set once per service rather than per environment, and keeps DB/storage on Supabase so only the web tier moves (owner's answer, superseding the earlier Vercel choice; matches PRD §8). Cost and long build times are the trade-off against Vercel's per-PR previews. `render.yaml` is the source of truth for the build/start commands and env var keys |
-| Database | Supabase Postgres, accessed through Drizzle ORM | Managed backups satisfy PRD §7 reliability; one vendor for DB and file storage; Drizzle gives typed queries and SQL migrations that work from Server Actions (owner's answer) |
+| Database | Supabase Postgres, accessed through Drizzle ORM | Managed backups satisfy PRD §7 reliability; one vendor for DB and file storage; Drizzle gives typed queries and SQL migrations that run from route handlers and Server Actions (owner's answer) |
 | File storage | Supabase Storage | CV PDFs and project images (PRD §4.3, §6); CV bucket is private and served only through the counting endpoint, image bucket is public (see §4, §5) |
 | Auth | Auth.js (NextAuth v5), credentials provider, bcrypt hashes, JWT session cookies | PRD §4.2 requires email/password login, session management, and password reset; Auth.js was the owner's pick and leaves an OAuth provider slot open for the optional SSO later |
 | Styling | Tailwind CSS with a project-defined token set | Brand system is built from scratch (owner's answer to PRD §12 Q4); tokens live in the Tailwind theme, not scattered hex values (see §10) |
-| Validation | Zod, shared schemas | One schema per shape, reused by Server Actions and forms so the client and server can't drift (see §6, `src/lib/validation/`) |
+| Validation | Zod, shared schemas | One schema per shape, reused by the route handler or Server Action and the form that calls it, so the client and server can't drift (see §6, `src/lib/validation/`) |
 | Email | Resend | Contact-form notification to the owner and password-reset mail (PRD §8; owner's pick). Only `src/lib/email/` talks to the SDK |
 | Analytics | First-party `page_views` table + a path-only beacon | PRD §3.1 asks for basic page views; owner chose first-party over Plausible/Umami. CV downloads and contact submissions are already counted in their own tables |
 
@@ -186,7 +186,7 @@ the action/handler is the check.
 | `media_assets` (image bucket) | Yes, images are meant to be seen; `width`/`height` are public read so pages can size an image without a hardcoded ratio (§10) | No | Upload/delete |
 | CV file bytes | Yes, but only through `GET /api/cv/download`, which also increments the counter; the CV storage bucket is **private** | No | Upload/activate/revert/delete |
 | `cv_files` metadata (list, counts) | Only `getActiveCv()` fields needed for the CV page (id, date) | No | Full list in `/admin/cv` |
-| `contact_submissions` | No | Insert only via the contact Server Action (Zod validation + honeypot + rate limit, PRD §4.1/§7) | Read, set status, delete |
+| `contact_submissions` | No | Insert only via `POST /api/contact` (Zod validation + honeypot + rate limit, PRD §4.1/§7) | Read, set status, delete |
 | `users`, `password_reset_tokens` | No | Password-reset *request* is public (email only, no existence disclosure in the response) | Managed via auth flows |
 
 Additional rules that fall out of PRD §7:
@@ -233,15 +233,20 @@ src/
       page.tsx              # dashboard home: recent messages, download/visit counts
       projects/ experience/ skills/ testimonials/ cv/ media/ messages/ settings/
     api/
+      admin/                # admin mutations; every handler opens requireAdmin()
+                            #   projects/ experience/ skills/ testimonials/ media/
+                            #   messages/ settings/ cv/ overview
+      contact/route.ts      # public contact insert (validation + honeypot + rate limit)
       cv/download/route.ts  # serves active PDF + atomic count increment (§7)
       analytics/viewed/route.ts  # path-only page-view beacon
+      auth/                 # Auth.js handler + forgot/reset-password
+      health/route.ts       # DB-free probe for Render's healthCheckPath (§8)
     layout.tsx  globals.css  sitemap.ts  robots.ts
   components/
     site/                   # public-facing UI only
     admin/                  # admin UI only; never imported by (site)
     ui/                     # shared primitives (Button, Input, ...)
-  actions/                  # Server Actions: contact.ts, cv.ts, projects.ts,
-                            # content.ts, media.ts, messages.ts, settings.ts
+  actions/                  # Server Actions: auth.ts (login), cv.ts (activate/delete)
   lib/
     auth/                   # Auth.js config + guards.ts (requireAdmin)
     db/                     # schema.ts, cv.ts, queries/public.ts, queries/admin.ts
@@ -258,9 +263,15 @@ What does NOT belong where:
 - No `components/admin/*` imports from `app/(site)`, and no
   `lib/db/queries/admin.ts` usage in public pages.
 - No provider SDK imports outside `lib/email/` and `lib/storage/`.
-- No API routes for content CRUD: admin mutations are Server Actions in
-  `actions/`. Route handlers exist only for the two endpoints above
-  (external POST surface) and Auth.js's own routes.
+- Admin CRUD lives in route handlers under `app/api/admin/`, and each one
+  opens with `requireAdmin()` (§4). Server Actions in `actions/` are
+  reserved for the mutations where a native `<form action>` is the better
+  fit and avoids navigating the admin to a raw JSON payload: the login
+  form (`actions/auth.ts`) and CV activate/delete (`actions/cv.ts`).
+  Public writes (`/api/contact`, `/api/auth/forgot-password`,
+  `/api/auth/reset-password`) are route handlers too. Don't add a second
+  pattern for a mutation that already has one — extend the existing
+  handler or action.
 
 ## 7. Concurrency & idempotency
 
@@ -317,9 +328,11 @@ aborting the release when a migration fails. `render.yaml` therefore keeps the
 `plan:` field and DEPLOYMENT.md §0 documents what the free tier does and does
 not support, so the two cannot drift without it being visible.
 
-`healthCheckPath: /` is set for the same reason. Without a health check, a
-deploy that builds successfully but fails on every request — as happened when
-the service had no `DATABASE_URL` — is still reported as a success (#103).
+`healthCheckPath: /api/health` is set for the same reason, and points at a route
+that never touches the database so a cold start cannot fail the probe. Without a
+health check, a deploy that builds successfully but fails on every request — as
+happened when the service had no `DATABASE_URL` — is still reported as a success
+(#103).
 
 ## 9. Observability
 

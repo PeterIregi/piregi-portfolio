@@ -60,15 +60,17 @@ GitHub issue it belongs to, per that file's format.
 - **Language**: TypeScript strict mode. eslint + prettier as configured
   in the scaffold; no `any` casts to dodge type errors.
 - **Validation**: one Zod schema per shape in `src/lib/validation/`,
-  shared by the Server Action and the form that calls it. A shape is
-  defined once; don't redefine it per endpoint (design.md §1/§6).
+  shared by the route handler or Server Action and the form that calls
+  it. A shape is defined once; don't redefine it per endpoint
+  (design.md §1/§6).
 - **Naming**: snake_case DB columns (Drizzle maps them), camelCase
   TypeScript identifiers, kebab-case file names, kebab-case slugs for
   projects. Tailwind theme spacing/colors by token name, not raw value.
-- **File placement**: match `design.md` §6. Server Actions in `actions/`
-  (no API routes for CRUD), public DB reads in
-  `lib/db/queries/public.ts`, provider code in its library folder,
-  admin components never imported from `app/(site)`.
+- **File placement**: match `design.md` §6. Admin CRUD is route handlers
+  under `app/api/admin/`, each opening with `requireAdmin()`; Server
+  Actions in `actions/` are only the login form and CV activate/delete.
+  Public DB reads in `lib/db/queries/public.ts`, provider code in its
+  library folder, admin components never imported from `app/(site)`.
 - **Migrations**: Drizzle Kit, applied in sequence. An applied migration
   is never edited, only superseded by a new one (design.md §8's env rule
   assumes this discipline).
