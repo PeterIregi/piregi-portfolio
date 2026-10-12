@@ -41,7 +41,8 @@ export default async function AboutPage() {
         <div className="md:w-2/3">
           <h1 className="font-display text-4xl lg:text-5xl text-ink mb-4">About</h1>
           <p className="max-w-2xl text-lg leading-relaxed text-graphite">
-            {settings.brand?.tagline ?? "Full Stack Developer"} passionate about building reliable, scalable software.
+            {settings.bio?.summary ??
+              `${settings.brand?.tagline ?? "Full Stack Developer"} passionate about building reliable, scalable software.`}
           </p>
         </div>
         {bioPhoto && (

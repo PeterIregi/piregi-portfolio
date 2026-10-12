@@ -24,6 +24,9 @@ const optionalEmail = z.union([
 
 const bioSchema = z.object({
   photoMediaId: z.string().trim().uuid().nullable().or(z.literal("")),
+  // The professional-summary sentence rendered on the home hero and About
+  // page. Optional so rows written before the field existed still validate.
+  summary: optionalText(500).optional(),
 });
 
 export const settingsSchema = z.object({

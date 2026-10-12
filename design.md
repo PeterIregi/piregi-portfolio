@@ -138,6 +138,14 @@ pageViews = pgTable('page_views', {
 }, (t) => [index('page_views_path_time').on(t.path, t.viewedAt)])
 ```
 
+Editable shapes, all JSON values written via `/admin/settings` (design.md §4,
+prd §4.2): `brand` `{ name?, tagline? }`, `meta` `{ title?, description?,
+ogImage? }`, `socials` `{ github?, linkedin?, email? }`, and `bio`
+`{ photoMediaId?, summary? }`. `bio.photoMediaId` is the About photo;
+`bio.summary` is the professional-summary sentence the home hero and About
+page render, with a static prose fallback when it is unset so those pages do
+not depend on the admin having filled the field in.
+
 Intentionally deferred, with the PRD section that owns the decision:
 
 - No `articles` / blog table and no `/blog` routes: blog deferred to v2

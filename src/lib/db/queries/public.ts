@@ -21,7 +21,7 @@ export async function getSiteSettings() {
     meta?: { title?: string; description?: string; ogImage?: string };
     socials?: { github?: string; linkedin?: string; email?: string };
     brand?: { name?: string; tagline?: string };
-    bio?: { photoMediaId?: string };
+    bio?: { photoMediaId?: string; summary?: string };
   };
 }
 

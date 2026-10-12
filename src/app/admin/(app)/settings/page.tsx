@@ -30,6 +30,7 @@ export default async function SettingsPage() {
         },
         bio: {
           photoMediaId: settings.bio?.photoMediaId ?? "",
+          summary: settings.bio?.summary ?? "",
         },
       }}
     />

@@ -39,8 +39,8 @@ export default async function HomePage() {
             </h1>
             <p className="mt-4 text-xl lg:text-2xl text-graphite">{tagline}</p>
             <p className="mt-6 max-w-2xl mx-auto text-lg leading-relaxed text-graphite">
-              I build reliable, scalable software with a focus on clean architecture and
-              thoughtful user experiences.
+              {settings.bio?.summary ??
+                "I build reliable, scalable software with a focus on clean architecture and thoughtful user experiences."}
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Button variant="primary" size="md" href="/projects">

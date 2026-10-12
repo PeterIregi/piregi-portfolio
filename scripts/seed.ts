@@ -195,6 +195,8 @@ async function seed() {
       key: "bio",
       value: {
         photoMediaId: ID.media.bioPhoto,
+        summary:
+          "Motivated software developer with hands-on experience in Go and JavaScript. Skilled in problem-solving, collaborative learning, and adapting quickly to new technologies.",
       },
     },
   ];
