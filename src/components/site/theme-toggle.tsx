@@ -1,24 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 
-export function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    if (typeof window === "undefined") return "light";
-    const saved = localStorage.getItem("theme") as "light" | "dark" | null;
-    if (saved) return saved;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  });
+type Theme = "light" | "dark";
 
-  const toggleTheme = () => {
-    setTheme((prev) => {
-      const newTheme = prev === "light" ? "dark" : "light";
-      localStorage.setItem("theme", newTheme);
-      document.documentElement.classList.toggle("dark", newTheme === "dark");
-      return newTheme;
-    });
+const THEME_KEY = "theme";
+const subscribers = new Set<() => void>();
+
+function getCurrentTheme(): Theme {
+  if (typeof document === "undefined") return "light";
+  const saved = localStorage.getItem(THEME_KEY);
+  if (saved === "light" || saved === "dark") return saved;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function emit() {
+  for (const listener of subscribers) listener();
+}
+
+function setTheme(next: Theme) {
+  localStorage.setItem(THEME_KEY, next);
+  document.documentElement.classList.toggle("dark", next === "dark");
+  emit();
+}
+
+function subscribe(onStoreChange: () => void) {
+  // Apply the stored or system scheme the first time a listener signs up —
+  // once, after hydration — so a dark preference saved on a light-OS machine
+  // takes effect even though the media query alone would not have applied it.
+  // The state itself comes from getSnapshot, so there is no state to force
+  // into sync and no hydration mismatch: the initializer reading localStorage
+  // would render differently on the server than on the client (#34).
+  document.documentElement.classList.toggle("dark", getCurrentTheme() === "dark");
+  subscribers.add(onStoreChange);
+  return () => {
+    subscribers.delete(onStoreChange);
   };
+}
+
+function getServerSnapshot(): Theme {
+  return "light";
+}
+
+export function ThemeToggle() {
+  const theme = useSyncExternalStore(subscribe, getCurrentTheme, getServerSnapshot);
+
+  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
   return (
     <Button
