@@ -35,6 +35,12 @@ yarn-error.log*
 !.env.example
 !.env.production.example
 
+# local tool state: OAuth tokens for the Supabase plugin, and the scratch
+# dir the check scripts write logs into. Both were previously uncovered —
+# .opencode/ was fully untracked and .tmp/ only via .git/info/exclude (#123).
+.opencode/
+.tmp/
+
 # vercel
 .vercel
 
