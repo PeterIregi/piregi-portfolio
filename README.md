@@ -135,15 +135,26 @@ build and compares it to `origin/main`; the same check runs on a schedule via
 fired leaves CI green (#122). It allows a grace window after a commit lands,
 so a deploy still finishing is not reported as drift.
 
-Three more drive a running app in a browser and are deliberately not in CI,
-because every page is `force-dynamic`, reads the database, and design.md §8
-keeps `DATABASE_URL` off CI and preview builds:
+These drive a running app — `seo:check` over HTTP, the rest in a browser — and
+are deliberately not required checks on pull requests, because every page is
+`force-dynamic`, reads the database, and design.md §8 keeps `DATABASE_URL` off
+CI and preview builds. `seo:check`'s structural half needs no database, so it
+also runs on a schedule against production (`.github/workflows/deploy-check.yml`).
 
 ```bash
 BASE=http://localhost:3111 pnpm a11y:check    # keyboard, mobile nav, announcements, axe-core
 BASE=http://localhost:3111 pnpm login:check   # where a valid sign-in lands
+BASE=http://localhost:3111 pnpm seo:check     # the public head follows site_settings (#131)
 BASE=http://localhost:3111 node scripts/flows-check.mjs  # media and CV over real HTTP
 ```
+
+`seo:check` walks the public routes and asserts the head is complete — a
+non-empty title/description, Open Graph and Twitter tags, a canonical — and
+that the brand is applied by the title template rather than baked into each
+page, the failure #129 hid behind #18 and #24 both closing. With
+`DATABASE_URL` set it also compares the rendered values to the `meta`/`brand`
+rows and a published project, which is what proves the head follows the CMS;
+without it, the structural half still runs, so it can be pointed at production.
 
 `login:check` signs in as the seeded admin, so it needs a dev database and a
 freshly started server: login is rate limited to 5 attempts per email+IP per 15
