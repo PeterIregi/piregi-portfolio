@@ -12,6 +12,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed.ts",
+    "cleanup:stale-seed": "tsx scripts/cleanup-stale-seed-content.ts",
     "check:contrast": "tsx scripts/contrast-check.ts",
     "check:classes": "tsx scripts/class-check.ts",
     "db:check": "tsx scripts/schema-check.ts",

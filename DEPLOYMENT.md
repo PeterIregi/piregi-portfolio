@@ -167,9 +167,17 @@ SUPABASE_SERVICE_ROLE_KEY="..." \
 pnpm db:seed
 ```
 
-The seed inserts fixed uuids with `onConflictDoNothing`, so it is safe to
-re-run. It also uploads images to the `cv-images` bucket, which is why it
-needs the Supabase vars and not just `DATABASE_URL`.
+The seed inserts fixed uuids with `onConflictDoNothing`, so re-running it is
+safe: it never overwrites a row that already exists. That also means it cannot
+*update* seeded content or *remove* rows a later seed no longer defines — rows
+added by `onConflictDoNothing` are effectively first-write-wins. If the seed's
+content changed and the database was seeded before that change, the old rows
+stay and the new ones never insert, because their uuids are already taken
+(#127). For the samples that #9 replaced, `pnpm cleanup:stale-seed` removes the
+superseded rows (dry-run by default; `--apply` deletes) so a following
+`pnpm db:seed` can insert the current content into the freed uuids. It also
+uploads images to the `cv-images` bucket, which is why `pnpm db:seed` needs the
+Supabase vars and not just `DATABASE_URL`.
 
 ### Verify the schema actually applied
 
