@@ -29,3 +29,12 @@ jobs:
         run: node scripts/deploy-drift-check.mjs
         env:
           PROD_URL: https://piregi-portfolio.onrender.com
+
+      # Structural half of seo:check: no database and no dependencies to
+      # install, so it runs here against production. It catches a public head
+      # that lost its Open Graph block or its brand template — the #129 shape,
+      # which #18 and #24 both closed without anything noticing. The
+      # site_settings cross-check stays local (`DATABASE_URL` is not available
+      # in CI, design.md §8).
+      - name: Check the live head follows the title template
+        run: BASE=https://piregi-portfolio.onrender.com node scripts/seo-check.mjs
