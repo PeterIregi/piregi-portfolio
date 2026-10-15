@@ -8,7 +8,7 @@ import { siteUrl } from "@/lib/site-url";
 import { StructuredData, breadcrumbSchema } from "@/components/site/structured-data";
 
 export const metadata: Metadata = {
-  title: "Projects | Piregi Portfolio",
+  title: "Projects",
   description: "Selected projects: what was built, the stack behind it, and where it lives.",
   alternates: { canonical: "/projects" },
 };

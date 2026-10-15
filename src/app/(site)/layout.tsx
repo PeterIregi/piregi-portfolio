@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getSiteSettings } from "@/lib/db/queries/public";
 import { siteUrl } from "@/lib/site-url";
 import { Nav } from "@/components/site/nav";
@@ -12,6 +13,43 @@ import { SkipLink } from "@/components/ui/skip-link";
 // design.md §8), and an admin edit has to show up on the next request
 // rather than at the next deploy.
 export const dynamic = "force-dynamic";
+
+// Titles, descriptions and Open Graph come from the `meta` and `brand` rows so
+// the admin settings actually drive the public head (prd §7 Must, ground rule
+// 9). The brand name lives here and in site_settings, never repeated into page
+// files: a page sets a bare title and the template appends the brand. This is a
+// route-level metadata export rather than the root layout's static one, which
+// stays as the fallback for the admin shell.
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const brandName = settings.brand?.name ?? "Piregi Portfolio";
+  const title = settings.meta?.title ?? brandName;
+  const description = settings.meta?.description;
+  const ogImage = settings.meta?.ogImage;
+
+  return {
+    title: { default: title, template: `%s | ${brandName}` },
+    description,
+    // Inner pages leave their Open Graph to this block, so og:title is the
+    // site title there and each page's own `<title>`/description still carry
+    // the page-specific text. Project detail sets its own to advertise the
+    // project name and cover.
+    openGraph: {
+      type: "website",
+      siteName: brandName,
+      url: siteUrl(),
+      title,
+      description,
+      images: ogImage ? [ogImage] : undefined,
+    },
+    twitter: {
+      card: ogImage ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: ogImage ? [ogImage] : undefined,
+    },
+  };
+}
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSiteSettings();

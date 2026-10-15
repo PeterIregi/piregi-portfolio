@@ -9,9 +9,14 @@ import {
   testimonials,
 } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { cache } from "react";
 import { getActiveCv } from "@/lib/db/cv";
 
-export async function getSiteSettings() {
+// The public layout reads site_settings for the nav, footer and JSON-LD, and
+// generateMetadata reads the same rows for the title/description/Open Graph.
+// cache() collapses those into one query per request instead of one per
+// consumer (#129).
+export const getSiteSettings = cache(async () => {
   const rows = await db.select().from(siteSettings);
   const settings: Record<string, unknown> = {};
   for (const row of rows) {
@@ -23,7 +28,7 @@ export async function getSiteSettings() {
     brand?: { name?: string; tagline?: string };
     bio?: { photoMediaId?: string; summary?: string };
   };
-}
+});
 
 export async function getBioPhoto() {
   const [row] = await db

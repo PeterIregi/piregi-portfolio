@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import {
   getPublishedProjectBySlug,
+  getSiteSettings,
   listPublishedProjectGallery,
 } from "@/lib/db/queries/public";
 import { siteUrl } from "@/lib/site-url";
@@ -23,20 +24,28 @@ type ProjectPageProps = {
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getPublishedProjectBySlug(slug);
+  // getSiteSettings is request-cached, so this is the same query the layout
+  // already ran, not a second one (#129).
+  const [project, settings] = await Promise.all([getPublishedProjectBySlug(slug), getSiteSettings()]);
 
   if (!project) {
-    return { title: "Project not found | Piregi Portfolio" };
+    return { title: "Project not found" };
   }
 
+  const brandName = settings.brand?.name ?? "Piregi Portfolio";
+
+  // A page's openGraph replaces the layout's rather than merging into it, so
+  // the site-wide fields have to be repeated here or they vanish on this route.
   return {
-    title: `${project.title} | Piregi Portfolio`,
+    title: project.title,
     description: project.summary,
     alternates: { canonical: `/projects/${project.slug}` },
     openGraph: {
+      type: "article",
+      siteName: brandName,
+      url: `${siteUrl()}/projects/${project.slug}`,
       title: project.title,
       description: project.summary,
-      type: "article",
       ...(project.coverUrl ? { images: [{ url: project.coverUrl }] } : {}),
     },
   };
