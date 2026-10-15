@@ -126,7 +126,14 @@ pnpm typecheck        # tsc --noEmit
 pnpm check:contrast   # WCAG 2.1 AA contrast for both colour schemes
 pnpm check:classes    # every colour utility resolves to a theme token
 pnpm check:storage    # storage bucket round-trip against the live project
+pnpm deploy:check     # is the live site actually running main's HEAD? (#125)
 ```
+
+`deploy:check` reads the commit `GET /api/health` reports for the running
+build and compares it to `origin/main`; the same check runs on a schedule via
+`.github/workflows/deploy-check.yml`, because a deploy that silently never
+fired leaves CI green (#122). It allows a grace window after a commit lands,
+so a deploy still finishing is not reported as drift.
 
 Three more drive a running app in a browser and are deliberately not in CI,
 because every page is `force-dynamic`, reads the database, and design.md §8

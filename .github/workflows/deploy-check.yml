@@ -1,0 +1,31 @@
+# Fails when production is serving a build older than main's HEAD (#125).
+#
+# CI checks that the build compiles; it says nothing about whether the deploy
+# happened. #122 was five commits of silent drift with every check green, so
+# this runs on a timer against the live site. It is deliberately not a
+# required check on pull requests: it inspects the deployed service, which a
+# PR has not touched yet.
+name: Deploy drift
+
+on:
+  schedule:
+    # Every 6 hours, off the hour to avoid the scheduler's busiest minute.
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  production-matches-main:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # Full history so origin/main's commit date is available for the grace
+      # window (shallow clones carry no commit timestamps for the tip).
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compare the live build to main
+        run: node scripts/deploy-drift-check.mjs
+        env:
+          PROD_URL: https://piregi-portfolio.onrender.com
