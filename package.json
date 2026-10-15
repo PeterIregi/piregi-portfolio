@@ -17,7 +17,8 @@
     "db:check": "tsx scripts/schema-check.ts",
     "check:storage": "tsx scripts/storage-check.ts",
     "a11y:check": "node scripts/a11y-check.mjs",
-    "login:check": "node scripts/login-check.mjs"
+    "login:check": "node scripts/login-check.mjs",
+    "deploy:check": "node scripts/deploy-drift-check.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
