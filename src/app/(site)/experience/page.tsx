@@ -5,7 +5,7 @@ import { siteUrl } from "@/lib/site-url";
 import { StructuredData, breadcrumbSchema } from "@/components/site/structured-data";
 
 export const metadata: Metadata = {
-  title: "Experience | Piregi Portfolio",
+  title: "Experience",
   description: "Work history, education, and certifications, with dates and what each role involved.",
   alternates: { canonical: "/experience" },
 };

@@ -11,8 +11,8 @@ import {
 } from "@/lib/db/queries/public";
 
 export const metadata: Metadata = {
-  title: "Piregi Portfolio",
-  description: "Personal portfolio: work, experience, and a downloadable CV.",
+  // No title or description: the site layout supplies both from site_settings
+  // (`meta.title`/`meta.description`), so the home head follows the CMS (#129).
   // The other five public routes declare a canonical and `/` was the one
   // route without one, so the sitemap lists the origin and no page claims it.
   alternates: { canonical: "/" },

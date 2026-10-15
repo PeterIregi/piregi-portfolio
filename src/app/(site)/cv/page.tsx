@@ -6,7 +6,7 @@ import { siteUrl } from "@/lib/site-url";
 import { StructuredData, breadcrumbSchema } from "@/components/site/structured-data";
 
 export const metadata: Metadata = {
-  title: "CV | Piregi Portfolio",
+  title: "CV",
   description: "View or download the current CV, with the date it was last updated.",
   alternates: { canonical: "/cv" },
 };

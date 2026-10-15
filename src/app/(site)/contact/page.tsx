@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import ContactForm from "./contact-form";
 
 export const metadata: Metadata = {
-  title: "Contact | Piregi Portfolio",
+  title: "Contact",
   description: "Get in touch about a project, role, or collaboration.",
   alternates: { canonical: "/contact" },
 };
