@@ -152,6 +152,17 @@ Migrations and seeding run **from your own machine** against the production
 database. There is no in-service path: `preDeployCommand` is a paid-plan
 feature, and free web services have neither Shell access nor one-off jobs, so
 the service cannot run them itself.
+**Danger: never put prod credentials in `.env.production.local` (or any
+`.env.production*` file that Next.js auto-loads).** When `next start` runs with
+`NODE_ENV=production`, Next.js will load `.env.production.local` (and
+`.env.production`) after `.env.local`. Pointing it at the production database
+or service_role key makes every command that runs `next start` talk to prod —
+the a11y/login/seo check scripts start the dev server in production mode and
+would hit prod if that file exists. Keep prod secrets in a non-auto-loaded
+file (e.g. `.env.prod-credentials`), and pass the values inline when running
+migrations or seed checks. Also, do **not** `export` them into your shell's
+rc files; read them once for the command.
+
 
 ```bash
 DATABASE_URL="postgresql://..." pnpm db:migrate
