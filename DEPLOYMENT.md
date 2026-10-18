@@ -130,6 +130,51 @@ untouched when the URL's path is `/`.
 `main`. CI (`.github/workflows/ci.yml`) runs the lint, typecheck, and token
 checks on the same pushes; the workflow only builds, it does not deploy.
 
+### When auto-deploy stops firing (runbook)
+
+This has happened twice (#122, and its recurrence on Oct 17–18): the service
+settings still say `autoDeploy: yes` / `autoDeployTrigger: commit`, yet pushes
+to `main` produce **no deploy event at all**. Render's `notifyOnFail` does not
+cover it — a deploy that was never triggered is not a failed deploy — so the
+only thing that reports it is the scheduled **Deploy drift** workflow
+(`.github/workflows/deploy-check.yml`), which fails with:
+
+```
+FAIL  production is on <sha>, main is <sha> (<N>m old, past the 30m grace).
+```
+
+Diagnosis (confirm it is this failure and not a build failure):
+
+1. Render → service → **Events**: a normal `main` push should create a deploy
+   whose trigger is `commit`. Every recent event showing `api` or `manual`
+   means only humans have been deploying — the trigger is dead. A *failed*
+   build shows up here as an event, so its absence is the tell.
+2. GitHub → repo → **Settings → Webhooks**: the Render-managed webhook may be
+   listed with a failed `last_response`, or missing entirely (Render's GitHub
+   App delivers pushes without a repo webhook, so an empty list is not proof
+   on its own — Event 1 is the authoritative check).
+
+Recovery:
+
+1. **Catch up production now**: Render → service → **Manual Deploy →
+   Deploy latest commit**, or from a connected machine the Render API.
+   Deploy `main`'s HEAD; no database step is needed unless a migration
+   landed in the missed window (§5).
+2. **Reconnect GitHub**: Render → service → **Settings → Build & Deploy** →
+   reconnect the GitHub account/repo; on the GitHub side check
+   Settings → Applications → Render still has access to this repository.
+   Disconnecting and reconnecting the account recreates the dead trigger.
+3. **Verify the fix with a real push**, not with the manual deploy — a manual
+   deploy working proves nothing about the trigger. Push a trivial commit to
+   `main` and confirm an event appears with `trigger: commit`.
+4. Re-run the Deploy drift workflow (Actions → Deploy drift → Run workflow)
+   and expect `PASS production is running main's HEAD <sha>`.
+
+`pnpm deploy:check` runs the same comparison locally and is the faster loop
+while diagnosing. The 30-minute grace window (`GRACE_MINUTES`) exists so a
+deploy still in flight after a merge is not misread as drift; it does not
+paper over a missed deploy.
+
 ---
 
 ## 4. Custom Domain
