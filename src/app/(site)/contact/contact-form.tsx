@@ -10,9 +10,10 @@ import { StructuredData, breadcrumbSchema } from "@/components/site/structured-d
 
 type Props = {
   success: boolean;
+  contactEmail?: string;
 };
 
-export default function ContactForm({ success }: Props) {
+export default function ContactForm({ success, contactEmail }: Props) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -122,10 +123,28 @@ export default function ContactForm({ success }: Props) {
 
         <input type="hidden" name="hp" value="" tabIndex={-1} autoComplete="off" />
 
+        {/* Design.md §11: a one-paragraph privacy notice is a launch item,
+            because these submissions are personal data the admin stores and
+            can delete. The deletion contact is the CMS socials email, not a
+            literal, so renaming the inbox in admin updates this notice too. */}
         <p className="text-sm text-graphite">
-          By submitting this form, you agree to the processing of your personal information
-          for the purpose of responding to your message. I only keep what&apos;s necessary
-          to reply.
+          Privacy notice: your name, email, and message are stored only so I can reply to you.
+          They are visible only to me, never shared or used for marketing, and are kept until
+          you ask me to delete them
+          {contactEmail ? (
+            <>
+              {" — email "}
+              <a
+                href={`mailto:${contactEmail}`}
+                className="text-accent underline underline-offset-2 transition-colors hover:text-ink"
+              >
+                {contactEmail}
+              </a>
+              {" and the submission is removed."}
+            </>
+          ) : (
+            "."
+          )}
         </p>
 
         <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
