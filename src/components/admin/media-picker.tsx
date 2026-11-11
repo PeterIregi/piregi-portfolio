@@ -1,14 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-type MediaAsset = {
-  id: string;
-  publicUrl: string;
-  altText: string | null;
-  width: number | null;
-  height: number | null;
-};
+import Link from "next/link";
+import { useMediaAssets } from "./use-media-assets";
 
 type Props = {
   value: string;
@@ -18,35 +11,23 @@ type Props = {
 };
 
 export function MediaPicker({ value, onChange, label = "Bio Photo", emptyMessage = "No image selected" }: Props) {
-  const [assets, setAssets] = useState<MediaAsset[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    let active = true;
-    async function load() {
-      try {
-        const res = await fetch("/api/admin/media");
-        if (!res.ok) throw new Error("Failed to load media");
-        const data = await res.json();
-        if (active) setAssets(Array.isArray(data) ? data : []);
-      } catch (err) {
-        if (active) setError(err instanceof Error ? err.message : "Failed to load media");
-      } finally {
-        if (active) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      active = false;
-    };
-  }, []);
+  const { assets, loading, error, reload } = useMediaAssets();
 
   const selected = assets.find((a) => a.id === value);
 
   return (
     <div className="flex flex-col gap-3">
-      <label className="text-sm font-medium text-ink">{label}</label>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <label className="text-sm font-medium text-ink">{label}</label>
+        <div className="flex items-center gap-3 text-sm">
+          <Link href="/admin/media" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent-deep">
+            Upload or manage
+          </Link>
+          <button type="button" onClick={reload} className="text-graphite hover:text-ink">
+            Refresh
+          </button>
+        </div>
+      </div>
       {error && (
         <p role="alert" className="text-sm text-accent">
           {error}
@@ -88,6 +69,8 @@ export function MediaPicker({ value, onChange, label = "Bio Photo", emptyMessage
                 key={asset.id}
                 type="button"
                 onClick={() => onChange(asset.id)}
+                aria-pressed={asset.id === value}
+                aria-label={`Use image: ${asset.altText ?? asset.id}`}
                 className={`relative h-16 w-full overflow-hidden rounded border transition-colors ${
                   asset.id === value ? "border-accent" : "border-transparent hover:border-edge"
                 }`}

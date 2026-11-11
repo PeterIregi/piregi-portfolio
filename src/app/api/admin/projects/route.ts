@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireAdmin, isUnauthorized, unauthorizedResponse } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
-import { projects } from "@/lib/db/schema";
+import { projects, projectGallery } from "@/lib/db/schema";
+import { findMissingMediaIds } from "@/lib/db/media";
 import { eq } from "drizzle-orm";
 import { projectSchema } from "@/lib/validation/content";
 
@@ -21,7 +22,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Slug already exists" }, { status: 400 });
     }
 
-    const [project] = await db.insert(projects).values(parsed.data).returning();
+    const { galleryMediaIds = [], ...projectData } = parsed.data;
+    const missing = await findMissingMediaIds([
+      ...(projectData.coverMediaId ? [projectData.coverMediaId] : []),
+      ...galleryMediaIds,
+    ]);
+    if (missing.length > 0) {
+      return NextResponse.json({ error: `Image not found: ${missing.join(", ")}` }, { status: 400 });
+    }
+
+    // Cover and gallery are one unit: a project must not be created with a
+    // cover but a half-written gallery if an insert fails.
+    const project = await db.transaction(async (tx) => {
+      const [row] = await tx.insert(projects).values(projectData).returning();
+      if (galleryMediaIds.length > 0) {
+        await tx.insert(projectGallery).values(
+          galleryMediaIds.map((mediaId, position) => ({ projectId: row.id, mediaId, position }))
+        );
+      }
+      return row;
+    });
+
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
     console.error("create project error:", error);

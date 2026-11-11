@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireAdmin, isUnauthorized, unauthorizedResponse } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
-import { projects } from "@/lib/db/schema";
+import { projects, projectGallery } from "@/lib/db/schema";
+import { findMissingMediaIds } from "@/lib/db/media";
 import { eq } from "drizzle-orm";
 import { projectSchema } from "@/lib/validation/content";
 
@@ -16,7 +17,18 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    return NextResponse.json(project);
+    // The edit form needs the ordered gallery ids, not just the project row,
+    // or reopening it after a save would silently drop every plate.
+    const gallery = await db
+      .select({ mediaId: projectGallery.mediaId })
+      .from(projectGallery)
+      .where(eq(projectGallery.projectId, id))
+      .orderBy(projectGallery.position);
+
+    return NextResponse.json({
+      ...project,
+      galleryMediaIds: gallery.map((row) => row.mediaId),
+    });
   } catch (error) {
     console.error("get project error:", error);
     if (isUnauthorized(error)) return unauthorizedResponse();
@@ -46,11 +58,39 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ error: "Slug already exists" }, { status: 400 });
     }
 
-    const [project] = await db
-      .update(projects)
-      .set({ ...parsed.data, updatedAt: new Date() })
-      .where(eq(projects.id, id))
-      .returning();
+    const { galleryMediaIds, ...projectData } = parsed.data;
+    const missing = await findMissingMediaIds([
+      ...(projectData.coverMediaId ? [projectData.coverMediaId] : []),
+      ...(galleryMediaIds ?? []),
+    ]);
+    if (missing.length > 0) {
+      return NextResponse.json({ error: `Image not found: ${missing.join(", ")}` }, { status: 400 });
+    }
+
+    // Replace the gallery only when the caller sent a list, so an older client
+    // that omits the field cannot wipe images it did not know about. Replacing
+    // is delete-then-insert in one transaction; project_gallery has no row id
+    // to update in place.
+    const project = await db.transaction(async (tx) => {
+      const [row] = await tx
+        .update(projects)
+        .set({ ...projectData, updatedAt: new Date() })
+        .where(eq(projects.id, id))
+        .returning();
+
+      if (!row) return null;
+
+      if (galleryMediaIds !== undefined) {
+        await tx.delete(projectGallery).where(eq(projectGallery.projectId, id));
+        if (galleryMediaIds.length > 0) {
+          await tx.insert(projectGallery).values(
+            galleryMediaIds.map((mediaId, position) => ({ projectId: id, mediaId, position }))
+          );
+        }
+      }
+
+      return row;
+    });
 
     if (!project) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { MediaPicker } from "@/components/admin/media-picker";
 
 export type TestimonialRow = {
   id: string;
@@ -13,6 +14,7 @@ export type TestimonialRow = {
   authorTitle: string;
   company: string | null;
   quote: string;
+  avatarMediaId: string | null;
 };
 
 export function TestimonialForm({
@@ -28,6 +30,7 @@ export function TestimonialForm({
   const [authorTitle, setAuthorTitle] = useState(initial.authorTitle);
   const [company, setCompany] = useState(initial.company ?? "");
   const [quote, setQuote] = useState(initial.quote);
+  const [avatarMediaId, setAvatarMediaId] = useState(initial.avatarMediaId ?? "");
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -47,6 +50,7 @@ export function TestimonialForm({
           authorTitle,
           company: company || undefined,
           quote,
+          avatarMediaId: avatarMediaId || null,
         }),
       });
 
@@ -155,6 +159,13 @@ export function TestimonialForm({
             placeholder="Testimonial quote..."
           />
         </div>
+
+        <MediaPicker
+          label="Avatar"
+          value={avatarMediaId}
+          onChange={setAvatarMediaId}
+          emptyMessage="No avatar selected"
+        />
 
         <div className="flex flex-wrap gap-3">
           <Button type="submit" className="w-full sm:w-auto" disabled={saving}>

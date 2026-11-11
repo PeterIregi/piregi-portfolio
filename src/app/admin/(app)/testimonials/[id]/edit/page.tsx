@@ -25,6 +25,7 @@ export default async function EditTestimonialPage({
         authorTitle: testimonial.authorTitle,
         company: testimonial.company,
         quote: testimonial.quote,
+        avatarMediaId: testimonial.avatarMediaId,
       }}
       created={created === "1"}
     />
