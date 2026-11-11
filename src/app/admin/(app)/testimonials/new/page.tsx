@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { MediaPicker } from "@/components/admin/media-picker";
 import { useRouter } from "next/navigation";
 
 export default function NewTestimonialPage() {
@@ -14,6 +15,7 @@ export default function NewTestimonialPage() {
   const [authorTitle, setAuthorTitle] = useState("");
   const [company, setCompany] = useState("");
   const [quote, setQuote] = useState("");
+  const [avatarMediaId, setAvatarMediaId] = useState("");
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -26,7 +28,7 @@ export default function NewTestimonialPage() {
       const res = await fetch("/api/admin/testimonials", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ authorName, authorTitle, company, quote }),
+        body: JSON.stringify({ authorName, authorTitle, company, quote, avatarMediaId: avatarMediaId || null }),
       });
 
       if (!res.ok) {
@@ -59,6 +61,12 @@ export default function NewTestimonialPage() {
           <label htmlFor="quote" className="text-sm font-medium text-ink">Quote</label>
           <textarea id="quote" name="quote" required rows={4} value={quote} onChange={e => setQuote(e.target.value)} className="h-24 w-full rounded border border-edge bg-paper px-3.5 py-3.5 text-ink placeholder:text-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent resize-y" placeholder="Testimonial quote..." />
         </div>
+        <MediaPicker
+          label="Avatar"
+          value={avatarMediaId}
+          onChange={setAvatarMediaId}
+          emptyMessage="No avatar selected"
+        />
         <Button type="submit" className="w-full sm:w-auto" disabled={loading}>{loading ? "Creating…" : "Create Testimonial"}</Button>
       </form>
     </Container>

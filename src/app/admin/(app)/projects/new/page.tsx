@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { MediaPicker } from "@/components/admin/media-picker";
+import { MediaMultiPicker } from "@/components/admin/media-multi-picker";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function NewProjectPage() {
@@ -20,6 +22,8 @@ export default function NewProjectPage() {
   const [tags, setTags] = useState("");
   const [projectUrl, setProjectUrl] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
+  const [coverMediaId, setCoverMediaId] = useState("");
+  const [galleryMediaIds, setGalleryMediaIds] = useState<string[]>([]);
   const [status, setStatus] = useState<"draft" | "published">("draft");
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
@@ -42,6 +46,8 @@ export default function NewProjectPage() {
           tags: tags.split(",").map(s => s.trim()).filter(Boolean),
           projectUrl: projectUrl || undefined,
           repoUrl: repoUrl || undefined,
+          coverMediaId: coverMediaId || null,
+          galleryMediaIds,
           status,
         }),
       });
@@ -102,6 +108,14 @@ export default function NewProjectPage() {
         <Input label="Tags (comma-separated)" id="tags" name="tags" type="text" value={tags} onChange={e => setTags(e.target.value)} placeholder="full-stack, e-commerce" />
         <Input label="Project URL" id="projectUrl" name="projectUrl" type="url" value={projectUrl} onChange={e => setProjectUrl(e.target.value)} placeholder="https://example.com" />
         <Input label="Repo URL" id="repoUrl" name="repoUrl" type="url" value={repoUrl} onChange={e => setRepoUrl(e.target.value)} placeholder="https://github.com/example" />
+
+        <MediaPicker
+          label="Cover Image"
+          value={coverMediaId}
+          onChange={setCoverMediaId}
+          emptyMessage="No cover image selected"
+        />
+        <MediaMultiPicker value={galleryMediaIds} onChange={setGalleryMediaIds} />
 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-ink">Status</label>

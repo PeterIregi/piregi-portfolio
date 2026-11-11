@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin, isUnauthorized, unauthorizedResponse } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
 import { testimonials } from "@/lib/db/schema";
+import { findMissingMediaIds } from "@/lib/db/media";
 import { eq } from "drizzle-orm";
 import { testimonialSchema } from "@/lib/validation/content";
 
@@ -26,6 +27,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const body = await req.json();
     const parsed = testimonialSchema.safeParse(body);
     if (!parsed.success) return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten() }, { status: 400 });
+
+    if (parsed.data.avatarMediaId) {
+      const missing = await findMissingMediaIds([parsed.data.avatarMediaId]);
+      if (missing.length > 0) {
+        return NextResponse.json({ error: `Image not found: ${missing.join(", ")}` }, { status: 400 });
+      }
+    }
 
     const [t] = await db.update(testimonials).set(parsed.data).where(eq(testimonials.id, id)).returning();
     if (!t) return NextResponse.json({ error: "Not found" }, { status: 404 });
