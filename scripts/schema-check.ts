@@ -4,8 +4,13 @@ import { config } from "dotenv";
 config({ path: ".env.local" });
 
 import { readFile, readdir } from "node:fs/promises";
+import net from "node:net";
 import path from "node:path";
 import postgres from "postgres";
+
+// This script opens its own connection rather than importing db/client.ts,
+// so it needs the same process-wide DNS64 workaround (#137).
+net.setDefaultAutoSelectFamily(false);
 
 /**
  * Compares the constraints and indexes the migration files declare against the
@@ -66,7 +71,7 @@ async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set");
 
-  const sql = postgres(url, { max: 1, prepare: false });
+  const sql = postgres(url, { max: 1, prepare: false, ssl: "require" });
   const declared = await readDeclared();
   console.log(
     `      ${declared.constraints.size} constraints, ${declared.indexes.size} indexes, ` +
