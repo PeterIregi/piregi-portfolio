@@ -37,6 +37,12 @@
 //
 // BASE is explicit on the command line so it is never ambiguous which site is
 // being checked.
+import net from "node:net";
+
+// Same DNS64/address-family timeout as src/lib/db/client.ts (#137), for the
+// cross-check's direct postgres.js connection.
+net.setDefaultAutoSelectFamily(false);
+
 const explicitDatabaseUrl = process.env.DATABASE_URL;
 
 const BASE = (process.env.BASE ?? "http://localhost:3111").replace(/\/+$/, "");
@@ -166,7 +172,11 @@ async function get(path) {
 async function read(label, fn) {
   return attempt(label, async () => {
     const { default: postgres } = await import("postgres");
-    const sql = postgres(crossCheckDatabaseUrl, { max: 1, connect_timeout: 10 });
+    const sql = postgres(crossCheckDatabaseUrl, {
+      max: 1,
+      connect_timeout: 10,
+      ssl: "require",
+    });
     try {
       return await fn(sql);
     } finally {

@@ -63,11 +63,13 @@ so without `AUTH_TRUST_HOST=true` every `/api/auth/*` request 500s and
 `/admin/login` is broken in production. `render.yaml` and
 `.env.production.example` both set it (design.md §8).
 
-One environment-specific database note: Supabase's connection pooler hostname is
-unreachable from networks where DNS64 synthesises `AAAA` records with no IPv6
-route. It surfaces as `ENETUNREACH` on `64:ff9b::...` from `pnpm db:migrate` or
-`pnpm db:check`, which reads like a credentials problem. Pinning the pooler's
-IPv4 literal in `DATABASE_URL` works around it.
+One environment-specific database note: on networks where DNS64 synthesises
+`AAAA` records with no IPv6 route, Node's address-family autoselection can try
+those unreachable addresses and time out even though the pooler's IPv4 address
+works. `src/lib/db/client.ts`, `drizzle.config.ts`, and the scripts that open
+their own connections disable autoselection for this reason (#137), so
+`DATABASE_URL` can keep the normal hostname. If a new script opens its own
+postgres.js client, call `net.setDefaultAutoSelectFamily(false)` before it.
 
 ### Database workflow
 
